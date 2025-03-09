@@ -3,7 +3,7 @@
         {
             "src": "doan2/wsgi.py",
             "use": "@vercel/python",
-            "config": { "maxLambdaSize": "100mb", "runtime": "python3.13" }
+            "config": { "maxLambdaSize": "100mb", "runtime": "python3.9" }
         },
         {
             "src": "static/**",
