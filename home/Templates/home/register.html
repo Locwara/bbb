@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'home/css/register.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="diagonal-background"></div>
+        <div class="content">
+            <div id="container_login">
+                <form action="" method="POST">
+                    <!-- csrf_token là bắt buộc phải có khi gửi form trong django -->
+                    {% csrf_token %}
+                    <div id="incontainer_login">
+                        <div class="chuadangkydem">
+                            <div class="chuadangky">
+                                <div class="chuatieude">
+                                    <div class="logo">
+                                        <img src="{% static 'home/images/logo3.png' %}" alt="">
+                                    </div>
+                                    <div class="tieude">
+                                        <div class="chuatieude1">
+                                            <h2>Create an account</h2>
+                                        </div>
+                                        <div class="chuatieude2">
+                                            <p>
+                                                Already have an account? <a href="#" onclick="window.location.href = `http://127.0.0.1:8000/login-client/login/`">Log in</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chuadangkyso">
+                                    <div class="chuadangky1">
+                                        <div class="fn">
+                                            <label for="">Fist name</label>
+                                            {{ form.first_name }}
+                                        </div>
+                                        <div class="ln">
+                                            <label for="">Last name</label>
+                                            {{ form.last_name }}
+                                        </div>
+                                    </div>
+                                    <div class="chuadangky2">
+                                        <label for="">Username</label>
+                                        {{ form.username }}
+                                    </div>
+                                    <div class="chuadangky3">
+                                        <label for="">Email address</label>
+                                        {{ form.email }}
+                                    </div>
+        
+                                    <div class="chuadangky4">
+                                        <div class="pw">
+                                            <label for="">Password</label>
+                                            {{ form.password }}
+                                        </div>
+                                        <div class="rpw">
+                                            <label for="">Confirm your password</label>
+                                            {{ form.rpassword }}
+                                        </div>
+                                    </div>
+                                    {% if messages %}
+                                    <div class="messages">
+                                        {% for mesage in messages %}
+                                        <div class="{{ message.tag }}">{{ message }}</div>
+                                        {% endfor %}
+                                    </div> 
+                                    {% endif %}
+        
+                                    <div class="chuadangky5">
+                                        <button type="submit">Create</button>
+                                    </div>
+                                </div>
+        
+                            </div>
+                        </div>
+        
+                        <div class="chuahinh">
+                            <div class="chuahinh1">
+                                <img src="{% static 'home/images/logo1.png' %}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

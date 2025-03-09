@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static '/home/css/home.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    {% block content %}
+    <div id="main">
+        <div class="chuaheader">
+            <div class="header">
+                <div class="lotlogonut">
+                    <div class="chualogohd">
+                        <div class="logohd">
+                            <img src="{% static '/home/images/logo2.png' %}" alt="">
+                        </div>
+                    </div>
+                    <div class="chuanuthd">
+                        <div class="nut">
+                            <p>ÁO</p>
+                        </div>
+                        <div class="nut">
+                            <p>QUẦN</p>
+                        </div>
+                        <div class="nut">
+                            <p>VÁY</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chuasearchicon">
+                    <div class="chuasearch">
+                        <input class="searchhd" type="text" name="search" placeholder="Search" id="">
+                    </div>
+                    <div class="chuaicon">
+                        <div class="icon">
+                            <i class="bi bi-cart"></i>
+                        </div>
+                        <div class="icon">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide">
+            <img class="slideimg" src="{% static 'home/images/phong-nen-chup-anh-quan-ao-01.jpg' %}" alt="">
+            <img src="{% static 'home/images/logo3.png' %}" class="logosd" alt="">
+        </div>
+        <div class="gioithieu">
+            <div class="gt">
+                <div class="lot">
+                    <h4>MIỄN PHÍ giao hàng</h4>
+                    <p>FREESHIP đơn hàng từ 500K</p>
+                </div>
+            </div>
+            <div class="gt">
+                <div class="lot">
+                    <h4>Thanh toán COD</h4>
+                    <p>Thanh toán khi nhận hàng</p>
+                </div>
+            </div>
+            <div class="gt">
+                <div class="lot">
+                    <h4>Ưu đãi khách hàng</h4>
+                    <p>Nhiều ưu đãi khủng</p>
+                </div>
+            </div>
+            <div class="gt">
+                <div class="lot">
+                    <h4>Đặt hàng nhanh chóng</h4>
+                    <p>Linh hoạt, bảo mật</p>
+                </div>
+            </div>
+        </div>
+        <h4 class="dmsp">DANH MỤC SẢN PHẨM</h4>
+        <div class="danhmucs">
+            <div class="danhmuc">
+                <div class="lot">
+                    <div class="img">
+                        <img src="{% static 'home/images/ao.webp' %}" alt="">
+                    </div>
+
+                    <div class="noidung">
+                        <p>ÁO</p>
+                    </div>
+                </div>
+            </div>
+            <div class="danhmuc">
+                <div class="lot">
+                    <div class="img">
+                        <img src="{% static 'home/images/quan.jpg' %}" alt="">
+                    </div>
+
+                    <div class="noidung">
+                        <p>QUẦN</p>
+                    </div>
+                </div>
+            </div>
+            <div class="danhmuc">
+                <div class="lot">
+                    <div class="img">
+                        <img src="{% static 'home/images/vay.jpg' %}" alt="">
+                    </div>
+
+                    <div class="noidung">
+                        <p>VÁY</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="danhsachspgy">
+            <h4 class="dmsp">CÓ THỂ BẠN SẼ THÍCH</h4>
+            <div class="chuasp">
+                {% for item in products|slice:":5" %}
+                <div class="sp">
+                    <div class="lot">
+                        <div class="chuaanh">
+                            <img src="{{ item.variant_image }}" alt="">
+                        </div>
+                        <div class="chuadl">
+                            <p class="tensp">{{ item.product.name }} </p>
+                            <div class="chuagia">
+                                <div class="giagiam">{{ item.giagiam}}</div>
+                                <div class="giagoc">{{ item.giagoc}}</div>
+                                <div class="ptg">
+                                    <p>-{{ item.discount_percent|floatformat:0 }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="danhsachspnnm">
+            <h4 class="dmsp">NHỮNG SẢN PHẨM NHIỀU NGƯỜI MUA</h4>
+            <div class="chuasp">
+                {% for item in products|slice:":5" %}
+                <div class="sp">
+                    <div class="lot">
+                        <div class="chuaanh">
+                            <img src="{{ item.variant_image }}" alt="">
+                        </div>
+                        <div class="chuadl">
+                            <p class="tensp">{{ item.product.name }} </p>
+                            <div class="chuagia">
+                                <div class="giagiam">{{ item.giagiam}}</div>
+                                <div class="giagoc">{{ item.giagoc}}</div>
+                                <div class="ptg">
+                                    <p>-{{ item.discount_percent|floatformat:0 }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+
+</html>
