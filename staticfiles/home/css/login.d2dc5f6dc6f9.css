@@ -1,0 +1,353 @@
+
+
+
+html{
+    font-family: Arial, Helvetica, sans-serif;
+}
+#container_login{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#incontainer_login{
+    width: 800px;
+    height: 700px;
+    border-radius: 24px;
+    border:1px solid #00000050;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    background-color: #fff;
+}
+
+.chuahinh{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.chuahinh1{
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.chuahinh1 img{
+    max-width: 100%;
+    height: auto;
+    
+}
+
+.chuadangkydem{
+    display: flex;
+    justify-content: center;
+   margin-top: 30px;
+}
+.chuadangky{
+    height: 500px;
+    width: 400px;
+    
+}   
+
+#container_login .logo{
+    border-radius: 50px;
+    height: 50px;
+    width: 50px;
+}
+#container_login .logo img{
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 50px;
+    box-shadow: 0 0 5px #000;
+}
+.chuatieude .tieude{
+   padding-top: 5px;
+}
+.chuatieude2 p a{
+    color: #656363;
+}
+
+
+.chuadangkyso{
+    height: 300px;
+    width: 430px;
+}
+
+
+.chuadangky .chuadangkyso .chuadangky1{
+    width: 400px;
+    height: 60px;
+    display: flex;
+    gap: 10px;
+    
+}
+.fn, .ln{
+    display: flex;
+    flex-direction: column;
+}
+.fn input, .ln input{
+    padding-left: 10px;
+    width: 195px;
+    height: 60px;
+    border-radius: 8px;
+    border: 0.5px solid #66666650;
+}
+
+.fn label, .ln label, .chuadangky2 label, .chuadangky3 label, .pw label, .rpw label{
+    font-size: 15px;
+    margin-bottom: 5px;
+    color: #666666;
+}
+
+.chuadangky .chuadangkyso .chuadangky2{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 60px;
+    margin-top: 10px;
+}
+.chuadangkyso{
+    margin-top: 50px;
+}
+.chuadangky2 input{
+    width: 415px;
+    height: 60px;
+    border-radius: 8px;
+    border: 0.5px solid #66666650;
+    padding-left: 10px;
+}
+
+
+
+
+
+.chuadangky .chuadangkyso .chuadangky3{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 60px;
+    margin-top: 10px;
+}
+
+.chuadangky3 input{
+    width: 415px;
+    height: 60px;
+    border-radius: 8px;
+    border: 0.5px solid #66666650;
+    padding-left: 10px;
+}
+
+.chuadangky .chuadangkyso .chuadangky4{
+    width: 400px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    
+}
+.pw, .rpw{
+    display: flex;
+    flex-direction: column;
+}
+.pw input, .rpw input{
+    width: 195px;
+    height: 60px;
+    border-radius: 8px;
+    border: 0.5px solid #66666650;
+    padding-left: 10px;
+}
+
+.chuadangky .chuadangkyso .chuadangky5{
+    width: 167%;
+    height: 60px;
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    
+}
+
+
+button {
+    width: 6.5em;
+    height: 2.3em;
+    margin: 0.5em;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 0.625em;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+   }
+   
+   button:hover {
+    color: black;
+    border: 0.2px solid #000;
+   }
+   
+   button:after {
+    content: "";
+    background: white;
+    position: absolute;
+    z-index: -1;
+    left: -20%;
+    right: -20%;
+    top: 0;
+    bottom: 0;
+    transform: skewX(-45deg) scale(0, 1);
+    transition: all 0.5s;
+   }
+   
+   button:hover:after {
+    transform: skewX(-45deg) scale(1, 1);
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+   }
+
+   .fogotpassword{
+    margin-top: 5px;
+    text-decoration: none;
+    color: #000000;
+    font-weight: bold;
+   }
+   .btn-group{
+    margin-top: 5px;
+   }
+
+/* for messages */
+/* Định dạng chung cho container messages */
+.messages {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Định dạng cho success message */
+.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* Định dạng cho error message */
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* Hiệu ứng khi có message mới */
+.messages > div {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Thêm icon cho messages (tùy chọn) */
+.success::before {
+    content: '✓';
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.error::before {
+    content: '✕';
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+/* Animation khi message xuất hiện (tùy chọn) */
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.messages > div {
+    animation: slideIn 0.3s ease-out;
+}
+.chuagg svg, .chuafb svg{
+    width: 20px;
+}
+
+.chuagg{
+    padding: 0px 10px 0px 10px;
+    display: flex;
+    gap: 10px;
+    border-radius: 12px;
+    border: 1px solid #00000050;
+    width: 356px;
+}
+.chuagg p{
+    color: #666666;
+    font-size: 10px;
+}
+.chuafb{
+    padding: 0px 10px 0px 10px;
+    display: flex;
+    gap: 10px;
+    border-radius: 12px;
+    border: 1px solid #00000050;
+}
+.chuafb p{
+    color: #666666;
+    font-size: 10px;
+}
+
+.chuaggfb{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chuap{
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.diagonal-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #95c959, #ff74ba);
+    clip-path: polygon(0 0, 100% 0, 100% 30%, 0% 50%);
+    z-index: -1;
+}
+
+.content{
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
