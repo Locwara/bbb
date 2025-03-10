@@ -1,24 +1,26 @@
 {
-    "builds": [
-      {
-        "src": "doan2/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "100mb", "runtime": "python3.9" }
-      },
-      {
-        "src": "static/**",
-        "use": "@vercel/static"
+  "builds": [
+    {
+      "src": "doan2/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "100mb", "runtime": "python3.9" }
+    },
+    {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
       }
-    ],
-    "routes": [
-      {
-        "src": "/static/(.*)",
-        "dest": "/static/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "doan2/wsgi.py"
-      }
-    ]
-  }
-  
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/staticfiles/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "doan2/wsgi.py"
+    }
+  ]
+}
