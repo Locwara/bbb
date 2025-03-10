@@ -152,8 +152,8 @@ AUTHENTICATION_BACKENDS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Cấu hình cho file tĩnh
-STATIC_URL = '/static/'
+STATIC_URL = '/home/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'home/static'),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
