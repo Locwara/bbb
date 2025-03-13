@@ -1,0 +1,61 @@
+{% extends 'home/home.html' %}
+{% load static %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="{% static 'home/css/variants.css' %}">
+    <div class="product-detail">
+        <h1>{{ product.name }}</h1>
+        <div class="product-image">
+            <img id="main-image" src="" alt="{{ product.name }}">
+        </div>
+        
+        <div class="product-info">
+            <p>{{ product.description }}</p>
+            
+            <div class="color-selection">
+                <h3>Màu sắc:</h3>
+                <div id="color-options">
+                    {% for color in variants_by_color.keys %}
+                    <div class="color-option" 
+                         data-color="{{ color }}"
+                         style="background-color: {{ color }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="size-selection">
+                <h3>Kích thước:</h3>
+                <div id="size-options"></div>
+            </div>
+            
+            <div class="variant-info" id="variant-info"></div>
+
+            <div class="quantity-control">
+                <button class="quantity-button" onclick="decreaseQuantity()">-</button>
+                <input type="number" id="quantity" class="quantity-input" value="1" min="1" onchange="validateQuantity()">
+                <button class="quantity-button" onclick="increaseQuantity()">+</button>
+            </div>
+            
+            <div class="product-details">
+                <p id="price"></p>
+                <p id="stock"></p>
+            </div>
+
+            <div class="price-info">
+                <p>Đơn giá: <span id="unit-price">0đ</span></p>
+                <p>Số lượng: <span id="quantity-display">1</span></p>
+                <p class="total-price">Tổng tiền: <span id="total-price">0đ</span></p>
+            </div>
+            
+            <button id="add-to-cart" class="add-to-cart-btn" disabled onclick="addToCart()">Thêm vào giỏ hàng</button>
+        </div>
+    </div>
+    <script src="{% static 'home/js/variants.js' %}"></script>
+    <script>
+        const variantsData = {{ variants_json|safe }};
+        const addToCartUrl = "{% url 'add_to_cart' %}"
+    </script>
+
+{% endblock%}

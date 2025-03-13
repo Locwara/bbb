@@ -8,5 +8,7 @@ urlpatterns = [
     path('login/', home.login_view, name='login'),
     # đường dẫn cho trang chủ
     path('home/', home.home, name='home'),
+    path('product/<int:product_id>/', home.product_detail, name='product_detail'),
+    path('cart/add/', home.add_to_cart, name='add_to_cart'),
 
 ]

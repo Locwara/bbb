@@ -5,7 +5,7 @@ from .models import Product
 # import xác thực (hàm đã viết ở file backends) và login là hàm của django
 from django.contrib.auth import authenticate, login
 from .models import UserClient
-
+import random
 # Create your views here.
 
 
@@ -82,7 +82,12 @@ def home(request):
     
     
     # Thêm thông tin hình ảnh vào từng sản phẩm
+    product_ao = []
+    product_quan = []
+    product_vay = []
     product_list = []
+   
+    
     #duyệt từng phần tử của products
     for product in products:
         # Lấy hình ảnh của biến thể đầu tiên (nếu có)
@@ -102,6 +107,134 @@ def home(request):
             'giagiam': format_currency(giagiam)
         }
         product_list.append(product_data)
-    return render(request, 'home/home.html', {'products': product_list})
+        if product.type.category_id.name in ["Áo", "Ao"]:
+            product_ao.append(product_data)
+        if product.type.category_id.name in ["Quần", "Quan"]:
+            product_quan.append(product_data)
+        if product.type.category_id.name in ["Váy", "Vay"]:
+            product_vay.append(product_data)
+            
+    product_random = []
+    if product_list:
+        num_random = min(5, len(product_list))
+        random_product = random.sample(product_list, num_random)
+        product_random = random_product
+    product_random1 = []
+    
+    if product_list: 
+        num_random = min(5, len(product_list))
+        random_product = random.sample(product_list, num_random)
+        product_random1 = random_product
+    return render(request, 'home/home.html', {'products': product_list, 'product_ao': product_ao, 'product_quan': product_quan, 'product_vay': product_vay, 'product_random': product_random, 'product_random1': product_random1})
 
 
+from django.shortcuts import render, get_object_or_404
+from django.core.serializers.json import DjangoJSONEncoder
+from decimal import Decimal
+import json
+from .models import Product, Productvariant
+
+class DecimalEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return super().default(obj)
+
+def product_detail(request, product_id):
+    # Lấy thông tin sản phẩm
+    product = get_object_or_404(Product, id=product_id)
+   
+    # Lấy tất cả các biến thể sản phẩm còn hàng
+    variants = Productvariant.objects.filter(
+        product_id=product_id,
+        stock__gt=0
+    )
+   
+    # Tổ chức dữ liệu variants theo màu sắc
+    variants_by_color = {}
+    for variant in variants:
+        color = variant.color
+        if color not in variants_by_color:
+            variants_by_color[color] = {
+                'sizes': [],
+                'image': variant.image.url  # Lấy đường dẫn URL đầy đủ
+            }
+        variants_by_color[color]['sizes'].append({
+            'id': variant.id,      # Thêm ID của variant
+            'size': variant.size,
+            'stock': variant.stock,
+            'price': str(variant.price),  # Chuyển đổi Decimal thành string
+        })
+    
+    # Chuyển đổi thành JSON sử dụng encoder tùy chỉnh
+    variants_json = json.dumps(variants_by_color, cls=DecimalEncoder)
+    
+    return render(request, 'home/variants.html', {
+        'product': product,
+        'variants_json': variants_json,
+        'variants_by_color': variants_by_color
+    })
+    
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from .models import Cart, CartItem, Productvariant, UserClient
+import json
+
+@require_POST
+def add_to_cart(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'test': 'Hello World'})
+        # return JsonResponse({'success': False, 'message': 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng'}, status=401)
+    
+    try:
+        data = json.loads(request.body)
+        variant_id = data.get('variant_id')
+        quantity = data.get('quantity', 1)
+        
+        # Kiểm tra dữ liệu đầu vào
+        if not variant_id:
+            return JsonResponse({'success': False, 'message': 'Thiếu thông tin biến thể sản phẩm'}, status=400)
+        
+        # Lấy user hiện tại (giả sử người dùng đã đăng nhập)
+        user = UserClient.objects.get(username=request.user.username)
+        
+        # Kiểm tra và lấy biến thể sản phẩm
+        try:
+            variant = Productvariant.objects.get(id=variant_id)
+        except Productvariant.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Không tìm thấy biến thể sản phẩm'}, status=404)
+        
+        # Kiểm tra tồn kho
+        if variant.stock < quantity:
+            return JsonResponse({
+                'success': False, 
+                'message': f'Số lượng yêu cầu vượt quá tồn kho. Hiện chỉ còn {variant.stock} sản phẩm.'
+            }, status=400)
+        
+        # Tìm hoặc tạo giỏ hàng
+        cart, created = Cart.objects.get_or_create(user_id=user)
+        
+        # Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        cart_item, item_created = CartItem.objects.get_or_create(
+            cart_id=cart,
+            product_variant_id=variant,
+            defaults={'quantity': quantity}
+        )
+        
+        # Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
+        if not item_created:
+            cart_item.quantity += quantity
+            cart_item.save()
+        
+        # Đếm số lượng sản phẩm trong giỏ hàng
+        cart_count = CartItem.objects.filter(cart_id=cart).count()
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Đã thêm sản phẩm vào giỏ hàng', 
+            'cart_count': cart_count
+        })
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)

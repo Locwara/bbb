@@ -46,7 +46,7 @@ class Category(models.Model):
     
 
     class Meta:
-        db_table = 'Category'
+        db_table = 'category'
 
 class Producttype(models.Model):
     CATEGORY_ID_CHOICES =[
@@ -99,3 +99,22 @@ class Productvariant(models.Model):
 
     class Meta:
         db_table = 'productvariant'
+        
+        
+class Cart(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey('UserClient', on_delete=models.CASCADE, db_column='user_id')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'cart'
+
+class CartItem(models.Model):
+    id = models.AutoField(primary_key=True)
+    cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE, db_column='cart_id', related_name='items')
+    product_variant_id = models.ForeignKey('Productvariant', on_delete=models.CASCADE, db_column='product_variant_id')
+    quantity = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'cartitem'

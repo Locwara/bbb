@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
+    'cloudinary_storage',
+    'cloudinary',
 
 ]
 
@@ -149,8 +151,15 @@ AUTHENTICATION_BACKENDS = [
     'home.backends.UserClientAuthBackend',
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dddpqvxzg',
+    'API_KEY': '768143393531413',
+    'API_SECRET': 'kvBPf1aaObw24uYYl_7gw6EZ2Aw'
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = '/media/'  # URL prefix vẫn giữ nguyên
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Không cần thiết nhưng vẫn giữ cho an toàn
 # Cấu hình cho file tĩnh
 STATIC_URL = '/home/static/'
 STATICFILES_DIRS = [
