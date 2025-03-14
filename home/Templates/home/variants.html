@@ -3,41 +3,47 @@
 
 {% block content %}
 
-    <link rel="stylesheet" href="{% static 'home/css/variants.css' %}">
-    <div class="product-detail">
-        <h1>{{ product.name }}</h1>
+<link rel="stylesheet" href="{% static 'home/css/variants.css' %}">
+
+<div class="product-detail">
+    <h4 class="ctsp">CHI TIẾT SẢN PHẨM</h4>
+    <div class="lot">
+
+
+        
         <div class="product-image">
             <img id="main-image" src="" alt="{{ product.name }}">
         </div>
-        
+
         <div class="product-info">
+            <h1>{{ product.name }}</h1>
             <p>{{ product.description }}</p>
-            
+
             <div class="color-selection">
-                <h3>Màu sắc:</h3>
+                <p>Màu sắc:</p>
                 <div id="color-options">
                     {% for color in variants_by_color.keys %}
-                    <div class="color-option" 
-                         data-color="{{ color }}"
-                         style="background-color: {{ color }}">
+                    <div class="color-option" data-color="{{ color }}" style="background-color: {{ color }}">
                     </div>
                     {% endfor %}
                 </div>
             </div>
-            
+
             <div class="size-selection">
-                <h3>Kích thước:</h3>
+                <p>Kích thước:</p>
                 <div id="size-options"></div>
             </div>
-            
-            <div class="variant-info" id="variant-info"></div>
+
+            <div class="variant-info" id="variant-info">
+            </div>
 
             <div class="quantity-control">
                 <button class="quantity-button" onclick="decreaseQuantity()">-</button>
-                <input type="number" id="quantity" class="quantity-input" value="1" min="1" onchange="validateQuantity()">
+                <input type="number" id="quantity" class="quantity-input" value="1" min="1"
+                    onchange="validateQuantity()">
                 <button class="quantity-button" onclick="increaseQuantity()">+</button>
             </div>
-            
+
             <div class="product-details">
                 <p id="price"></p>
                 <p id="stock"></p>
@@ -48,14 +54,42 @@
                 <p>Số lượng: <span id="quantity-display">1</span></p>
                 <p class="total-price">Tổng tiền: <span id="total-price">0đ</span></p>
             </div>
-            
-            <button id="add-to-cart" class="add-to-cart-btn" disabled onclick="addToCart()">Thêm vào giỏ hàng</button>
+
+            <button id="add-to-cart" class="add-to-cart-btn" disabled onclick="addToCart()">THÊM VÀO GIỎ HÀNG</button>
+            <button id="add-to-cart" class="add-to-cart-btn1" disabled onclick="addToCart()">MUA NGAY</button>
         </div>
     </div>
-    <script src="{% static 'home/js/variants.js' %}"></script>
-    <script>
-        const variantsData = {{ variants_json|safe }};
-        const addToCartUrl = "{% url 'add_to_cart' %}"
-    </script>
+</div>
+<div class="danhsachspnnm">
+    <h4 class="dmsp">CÓ THỂ BẠN SẼ THÍCH</h4>
+    <div class="chuasp">
+        {% for item in product_random|slice:":5" %}
+        <div class="sp">
+            <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+                <div class="lot">
+                    <div class="chuaanh">
+                        <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
+                    </div>
+                    <div class="chuadl">
+                        <p class="tensp">{{ item.product.name }}</p>
+                        <div class="chuagia">
+                            <div class="giagiam">{{ item.giagiam }}</div>
+                            <div class="giagoc">{{ item.giagoc }}</div>
+                            <div class="ptg">
+                                <p>-{{ item.discount_percent|floatformat:0 }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<script src="{% static 'home/js/variants.js' %}"></script>
+<script>
+    const variantsData = {{ variants_json| safe }};
+    const addToCartUrl = "{% url 'add_to_cart' %}"
+</script>
 
 {% endblock%}

@@ -141,6 +141,50 @@ class DecimalEncoder(DjangoJSONEncoder):
         return super().default(obj)
 
 def product_detail(request, product_id):
+    products = Product.objects.prefetch_related('variants').select_related('id_discount_percentage').all()
+    product_ao = []
+    product_quan = []
+    product_vay = []
+    product_list = []
+   
+    
+    #duyệt từng phần tử của products
+    for product in products:
+        # Lấy hình ảnh của biến thể đầu tiên (nếu có)
+        first_variant = product.variants.first()
+        first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
+        discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
+        
+        #tính giá giảm nè
+        giagoc = product.base_price
+        giagiam = giagoc - (giagoc * discount_percent/100)
+        # một dic để lưu biến tham chiếu qua html là các sản phẩm và hình 
+        product_data = {
+            'product': product,
+            'variant_image': first_variant_image,
+            'discount_percent': discount_percent,
+            'giagoc': format_currency(giagoc),
+            'giagiam': format_currency(giagiam)
+        }
+        product_list.append(product_data)
+        if product.type.category_id.name in ["Áo", "Ao"]:
+            product_ao.append(product_data)
+        if product.type.category_id.name in ["Quần", "Quan"]:
+            product_quan.append(product_data)
+        if product.type.category_id.name in ["Váy", "Vay"]:
+            product_vay.append(product_data)
+            
+    product_random = []
+    if product_list:
+        num_random = min(5, len(product_list))
+        random_product = random.sample(product_list, num_random)
+        product_random = random_product
+    product_random1 = []
+    
+    if product_list: 
+        num_random = min(5, len(product_list))
+        random_product = random.sample(product_list, num_random)
+        product_random1 = random_product
     # Lấy thông tin sản phẩm
     product = get_object_or_404(Product, id=product_id)
    
@@ -172,7 +216,10 @@ def product_detail(request, product_id):
     return render(request, 'home/variants.html', {
         'product': product,
         'variants_json': variants_json,
-        'variants_by_color': variants_by_color
+        'variants_by_color': variants_by_color,
+        'products': product_list,
+        'product_random': product_random,
+        'product_random1': product_random1
     })
     
 from django.http import JsonResponse

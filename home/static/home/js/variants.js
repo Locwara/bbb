@@ -51,8 +51,13 @@
         });
         
         // Cập nhật hình ảnh sản phẩm - Sử dụng đường dẫn đầy đủ
-        document.getElementById('main-image').src = variantsData[color].image;
+        const mainImage = document.getElementById('main-image');
+        mainImage.style.animation = 'none';
+        mainImage.offsetHeight; // Trigger reflow
+        mainImage.style.animation = 'fadeIn 0.5s';
         
+        // Cập nhật hình ảnh sản phẩm
+        mainImage.src = variantsData[color].image;
         // Cập nhật các tùy chọn kích thước
         updateSizeOptions(color);
         updateProductInfo();
@@ -80,6 +85,7 @@
         // Cập nhật trạng thái active cho tùy chọn kích thước
         document.querySelectorAll('.size-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.size === size);
+            document.getElementById('size-options').style.borderRadius='12px';
         });
         
         updateProductInfo();
@@ -93,33 +99,76 @@
         const stockElement = document.getElementById('stock');
         const addToCartButton = document.getElementById('add-to-cart');
         
-        if (selectedColor && selectedSize) {
-            currentVariant = variantsData[selectedColor].sizes.find(s => s.size === selectedSize);
-            if (currentVariant) {
-                priceElement.textContent = `Giá: ${formatPrice(currentVariant.price)}`;
-                stockElement.textContent = `Còn lại: ${currentVariant.stock} sản phẩm`;
-                addToCartButton.disabled = currentVariant.stock === 0;
+        // Thêm lớp để kích hoạt hiệu ứng fade-out
+        priceElement.classList.add('fade-out');
+        stockElement.classList.add('fade-out');
+        
+        // Đợi animation fade-out hoàn tất rồi mới cập nhật nội dung
+        setTimeout(() => {
+            if (selectedColor && selectedSize) {
+                currentVariant = variantsData[selectedColor].sizes.find(s => s.size === selectedSize);
+                if (currentVariant) {
+                    priceElement.textContent = `Giá: ${formatPrice(currentVariant.price)}`;
+                    stockElement.textContent = `Còn lại: ${currentVariant.stock} sản phẩm`;
+                    addToCartButton.disabled = currentVariant.stock === 0;
+                    
+                    // Thêm hiệu ứng cho nút khi được kích hoạt
+                    if (currentVariant.stock > 0) {
+                        addToCartButton.classList.add('button-active');
+                    } else {
+                        addToCartButton.classList.remove('button-active');
+                    }
+                }
+            } else {
+                currentVariant = null;
+                priceElement.textContent = '';
+                stockElement.textContent = '';
+                addToCartButton.disabled = true;
+                addToCartButton.classList.remove('button-active');
             }
-        } else {
-            currentVariant = null;
-            priceElement.textContent = '';
-            stockElement.textContent = '';
-            addToCartButton.disabled = true;
-        }
+            
+            // Xóa lớp fade-out và thêm lớp fade-in
+            priceElement.classList.remove('fade-out');
+            stockElement.classList.remove('fade-out');
+            priceElement.classList.add('fade-in');
+            stockElement.classList.add('fade-in');
+            
+            // Xóa lớp fade-in sau khi animation hoàn tất
+            setTimeout(() => {
+                priceElement.classList.remove('fade-in');
+                stockElement.classList.remove('fade-in');
+            }, 500);
+        }, 150);
     }
     
     function updateVariantInfo() {
         const variantInfoElement = document.getElementById('variant-info');
-        if (selectedColor && selectedSize && currentVariant) {
-            variantInfoElement.innerHTML = `
-                <strong>Sản phẩm đã chọn:</strong><br>
-                Màu: ${selectedColor}<br>
-                Size: ${selectedSize}<br>
-                Còn lại: ${currentVariant.stock} sản phẩm
-            `;
-        } else {
-            variantInfoElement.innerHTML = 'Vui lòng chọn màu sắc và kích thước';
-        }
+        
+        // Thêm lớp để kích hoạt hiệu ứng fade-out
+        variantInfoElement.classList.add('fade-out');
+        
+        // Đợi animation fade-out hoàn tất rồi mới cập nhật nội dung
+        setTimeout(() => {
+            if (selectedColor && selectedSize && currentVariant) {
+                variantInfoElement.innerHTML = `
+                    <strong>Sản phẩm đã chọn:</strong><br>
+                    <div class="color-option1" style="background-color: ${selectedColor}"></div><br>
+                    Size: ${selectedSize}<br>
+                    Còn lại: ${currentVariant.stock} sản phẩm
+                `;
+            } else {
+                variantInfoElement.innerHTML = 'Vui lòng chọn màu sắc và kích thước';
+            }
+            
+            // Xóa lớp fade-out và thêm lớp fade-in
+            variantInfoElement.classList.remove('fade-out');
+            variantInfoElement.classList.add('fade-in');
+            
+            // Xóa lớp fade-in sau khi animation hoàn tất
+            setTimeout(() => {
+                variantInfoElement.classList.remove('fade-in');
+            }, 500);
+        }, 200);
     }
     
     function validateQuantity() {
@@ -175,19 +224,43 @@
         const quantityDisplayElement = document.getElementById('quantity-display');
         const totalPriceElement = document.getElementById('total-price');
         const quantity = parseInt(document.getElementById('quantity').value);
-    
-        if (currentVariant) {
-            const unitPrice = parseFloat(currentVariant.price);
-            const totalPrice = unitPrice * quantity;
-    
-            unitPriceElement.textContent = formatPrice(unitPrice);
-            quantityDisplayElement.textContent = quantity;
-            totalPriceElement.textContent = formatPrice(totalPrice);
-        } else {
-            unitPriceElement.textContent = '0đ';
-            quantityDisplayElement.textContent = '0';
-            totalPriceElement.textContent = '0đ';
-        }
+        
+        // Thêm lớp để kích hoạt hiệu ứng fade-out
+        unitPriceElement.classList.add('price-fade-out');
+        quantityDisplayElement.classList.add('price-fade-out');
+        totalPriceElement.classList.add('price-fade-out');
+        
+        // Đợi animation fade-out hoàn tất rồi mới cập nhật nội dung
+        setTimeout(() => {
+            if (currentVariant) {
+                const unitPrice = parseFloat(currentVariant.price);
+                const totalPrice = unitPrice * quantity;
+            
+                unitPriceElement.textContent = formatPrice(unitPrice);
+                quantityDisplayElement.textContent = quantity;
+                totalPriceElement.textContent = formatPrice(totalPrice);
+            } else {
+                unitPriceElement.textContent = '0đ';
+                quantityDisplayElement.textContent = '0';
+                totalPriceElement.textContent = '0đ';
+            }
+            
+            // Xóa lớp fade-out và thêm lớp fade-in
+            unitPriceElement.classList.remove('price-fade-out');
+            quantityDisplayElement.classList.remove('price-fade-out');
+            totalPriceElement.classList.remove('price-fade-out');
+            
+            unitPriceElement.classList.add('price-fade-in');
+            quantityDisplayElement.classList.add('price-fade-in');
+            totalPriceElement.classList.add('price-fade-in');
+            
+            // Xóa lớp fade-in sau khi animation hoàn tất
+            setTimeout(() => {
+                unitPriceElement.classList.remove('price-fade-in');
+                quantityDisplayElement.classList.remove('price-fade-in');
+                totalPriceElement.classList.remove('price-fade-in');
+            }, 500);
+        }, 100);
     }
     function addToCart() {
         if (!selectedColor || !selectedSize || !currentVariant) {
