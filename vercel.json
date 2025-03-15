@@ -18,5 +18,10 @@
       "src": "/(.*)",
       "dest": "doan2/wsgi.py"
     }
-  ]
+  ],
+  "functions": {
+    "doan2/wsgi.py": {
+      "maxDuration": 60
+    }
+  }
 }
