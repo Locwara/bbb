@@ -1,0 +1,184 @@
+{% extends 'home/home.html' %}
+{% load static %}
+
+
+{% block content %}
+<style>
+    .profile-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .profile-header {
+        color: #212529;
+        font-weight: bold;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #212529;
+    }
+
+    .profile-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 5px rgba(33, 37, 41, 0.1);
+    }
+
+    .profile-card-header {
+        background-color: #212529;
+        color: white;
+        padding: 15px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .profile-card-body {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .profile-info {
+        background-color: #f0f1f2;
+        padding: 20px;
+        border-radius: 6px;
+    }
+
+    .profile-info p {
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .profile-info strong {
+        color: #212529;
+    }
+
+    .btn-dark {
+        background-color: #212529;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-dark:hover {
+        background-color: #343a40;
+    }
+
+    .order-stats {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .order-stat-item {
+        margin-bottom: 10px;
+        color: #212529;
+    }
+
+    @media (max-width: 768px) {
+        .profile-row {
+            flex-direction: column;
+        }
+    }
+    .order-button {
+        background-color: #212529;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+        text-decoration: none;
+        margin-top: 20px;
+    }
+    
+    .order-button:hover {
+        background-color: #343a40;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .order-button:active {
+        transform: translateY(0);
+    }
+    
+    .order-button i {
+        margin-right: 8px;
+        font-size: 18px;
+    }
+</style>
+
+<div class="profile-container">
+    <h1 class="profile-header">THÔNG TIN TÀI KHOẢN</h1>
+
+    <div class="row profile-row">
+        <div class="col-md-6">
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <h2 style="margin: 0;">THÔNG TIN TÀI KHOẢN</h2>
+                </div>
+
+                <div class="profile-card-body">
+                    <div class="profile-info">
+                        <p><strong>HỌ VÀ TÊN:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                        <p><strong>EMAIL:</strong> {{ user.email }}</p>
+                        <p><strong>ĐỊA CHỈ:</strong>
+                            {% if default_address %}
+                            {{ default_address.street }}, {{ default_address.ward }},
+                            {{ default_address.district }}, {{ default_address.city }}
+                            {% else %}
+                            Chưa có địa chỉ mặc định
+                            {% endif %}
+                        </p>
+                        <p><strong>SĐT:</strong> {{ user.phone_number }}</p>
+
+                        <!-- In the profile.html template, change the buttons section to: -->
+                        <div style="margin-top: 20px;">
+                            <a href="{% url 'update_profile' %}" class="btn-dark"
+                                style="margin-right: 10px; text-decoration: none; display: inline-block;">Cập nhật thông
+                                tin</a>
+                            {% if user.auth_type == None or user.auth_type != 'google' %}
+                            <button onclick="window.location.href='{% url 'change_password' %}'" class="btn-dark" style="margin-right: 10px;">Đổi mật khẩu</button>
+                            {% endif %}
+                            <a href="{% url 'logout' %}" class="btn-dark"
+                                style="text-decoration: none; display: inline-block;">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <h2 style="margin: 0;">THỐNG KÊ LỊCH SỬ MUA HÀNG</h2>
+                </div>
+
+                <div class="profile-card-body">
+                    <div class="profile-info order-stats">
+                        <p class="order-stat-item"><strong>Tổng số đơn hàng đã mua:</strong> {{ orders_completed }}</p>
+                        <p class="order-stat-item"><strong>Tổng số đơn hàng đang chờ xác nhận:</strong> {{ orders_pending }}</p>
+                        <p class="order-stat-item"><strong>Tổng số đơn hàng đang giao:</strong> {{ orders_accept}}</p>
+                        <p class="order-stat-item"><strong>Tổng số đơn hàng đã hủy:</strong> {{ orders_cancelled }}</p>
+                        <button onclick="window.location.href='{% url 'order_list' %}'" class="order-button">
+                            <i class="fas fa-shopping-bag"></i> Đơn hàng của bạn
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Trong file home.html hoặc base.html -->
+
+
+
+
+{% endblock %}

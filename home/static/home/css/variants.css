@@ -2,7 +2,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border: 2px solid #ddd;
+    border: 2px solid #969494 !important;
     margin: 5px;
     cursor: pointer;
     display: inline-block;
@@ -391,4 +391,9 @@
     animation: pulse 1.5s infinite;
     transform: scale(1.15);
     border: 2px solid #fff;
+}
+
+.product-info .lot{
+    display: flex;
+    flex-direction: column;
 }

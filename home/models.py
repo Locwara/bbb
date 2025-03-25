@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 # import hàm make_password của django
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 # Create your models here.
 
 
@@ -16,7 +16,7 @@ class UserClient(models.Model):
     email = models.EmailField(max_length=254)
     phone_number = models.IntegerField(null=True, blank=True)
     password = models.CharField(max_length=255)
-    auth_type = models.CharField(max_length=20, choices=[('email', 'Email'), ('facebook', 'Facebook'), ('tranditional', 'Tranditional')], null=True)
+    auth_type = models.CharField(max_length=20, choices=[('email', 'Email'), ('facebook', 'Facebook'), ('tranditional', 'Tranditional'), ('google', 'Google')], null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_login = models.DateField(blank=True)
@@ -33,6 +33,10 @@ class UserClient(models.Model):
     def set_password(self, raw_password):
         # make_password để mã hóa mật khẩu
         self.password = make_password(raw_password)
+    def check_password(self, raw_password):
+        # So sánh mật khẩu
+        return check_password(raw_password, self.password)
+    
      
      
      
@@ -112,9 +116,104 @@ class Cart(models.Model):
 class CartItem(models.Model):
     id = models.AutoField(primary_key=True)
     cart_id = models.ForeignKey(Cart, on_delete=models.CASCADE, db_column='cart_id', related_name='items')
-    product_variant_id = models.ForeignKey('Productvariant', on_delete=models.CASCADE, db_column='product_variant_id')
+    product_variant_id = models.ForeignKey('Productvariant', on_delete=models.CASCADE, db_column='product_variant_id', related_name='cart_items')
     quantity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         db_table = 'cartitem'
+        
+from django.db import models
+from django.contrib.auth.models import User
+
+# models.py
+class Order(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Đang xử lý'),
+        ('accept', 'Đang giao hàng'),
+        ('done', 'Đã hoàn thành'),
+        ('cancelled', 'Đã hủy'),
+    )
+    user = models.ForeignKey(UserClient, on_delete=models.CASCADE)
+    address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Thêm trường này
+    payment_method = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    customer_phone = models.CharField(max_length=15)
+    payment_status = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'orders'
+    
+
+# models.py
+from django.db import models
+
+class OrderItem(models.Model):
+    order = models.ForeignKey('Order', related_name='items', on_delete=models.CASCADE)  # Liên kết với Order
+    product_variant = models.ForeignKey('ProductVariant', on_delete=models.CASCADE)  # Liên kết với sản phẩm
+    quantity = models.PositiveIntegerField()  # Số lượng sản phẩm
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)  # Giá sản phẩm
+    created_at = models.DateTimeField(auto_now_add=True)  # Thời gian tạo
+
+    def total_price(self):
+        return self.quantity * self.unit_price  # Tính tổng tiềnteTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'orderitem'
+        
+        
+# models.py
+class Address(models.Model):
+    user = models.ForeignKey(UserClient , on_delete=models.CASCADE)
+    street = models.CharField(max_length=255)
+    ward = models.CharField(max_length=100)
+    district = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'address'
+
+    def save(self, *args, **kwargs):
+        # Tự động hủy tất cả địa chỉ mặc định khác nếu đánh dấu mặc định
+        if self.is_default:
+            Address.objects.filter(user=self.user, is_default=True).update(is_default=False)
+        super().save(*args, **kwargs)   
+
+class Voucher(models.Model):
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=20, unique=True)
+    discount_amount = models.DecimalField(max_digits=5, decimal_places=2)  # Phần trăm giảm giá
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def is_valid(self):
+        now = timezone.now()
+        return self.valid_from <= now <= self.valid_to
+    
+    def __str__(self):
+        return f"{self.code} - {self.discount_amount}%"
+    
+    class Meta:
+        db_table = 'voucher'
+        
+class UserRating(models.Model):
+    user = models.ForeignKey(UserClient, on_delete=models.CASCADE, related_name='ratings')
+    product_variant = models.ForeignKey('ProductVariant', on_delete=models.CASCADE, related_name='ratings')
+    rating = models.IntegerField()
+    comment = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'userrating'
+        verbose_name = 'User Rating'
+        verbose_name_plural = 'User Ratings'
+        
+    def __str__(self):
+        return f"{self.user.username} - {self.product_variant.name} ({self.rating}/5)"

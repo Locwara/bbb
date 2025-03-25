@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-74b8c%*3w2d(&l1fcawp!167p^4*&x#4p)pzv2lutk-z!2alrf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1']
+ALLOWED_HOSTS = ['.vercel.app', '127.0.0.1', 'abc123.ngrok.io', 'localhost']
 
 
 # Application definition
@@ -37,12 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'home',
     'cloudinary_storage',
     'cloudinary',
-
+    'home',
+    'social_django',
+    'django.contrib.humanize',
+    'paypal.standard.ipn',
 ]
-
+PAYPAL_RECEIVER_EMAIL = 'sb-zboho38960660@business.example.com'  # Email PayPal của bạn
+PAYPAL_TEST = True
+EXCHANGE_RATE_API_KEY = '2b4cbe2a8e43ee3b3817e803'
 MIDDLEWARE = [
     
     'django.middleware.security.SecurityMiddleware',
@@ -76,6 +80,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',  # Thêm context processor này
+                'social_django.context_processors.login_redirect',  # Thêm context processor này
             ],
         },
     },
@@ -149,20 +155,64 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Nên phải tự khai báo
 AUTHENTICATION_BACKENDS = [
     'home.backends.UserClientAuthBackend',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
 ]
+
+
+
+# Thiết lập Facebook OAuth
+SOCIAL_AUTH_FACEBOOK_KEY = '647224084581000'  # App ID từ Facebook Developer
+SOCIAL_AUTH_FACEBOOK_SECRET = '31043bf96ccf8031d197aa8159035fa5'  # App Secret từ Facebook Developer
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+LOGIN_REDIRECT_URL = 'home'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dddpqvxzg',
     'API_KEY': '768143393531413',
     'API_SECRET': 'kvBPf1aaObw24uYYl_7gw6EZ2Aw'
 }
+GOOGLE_CLIENT_ID = '14310137293-ltolga7peevcmvb8jhq7al070416rrtm.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'  # URL prefix vẫn giữ nguyên
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Không cần thiết nhưng vẫn giữ cho an toàn
+
 # Cấu hình cho file tĩnh
 STATIC_URL = '/home/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'home/static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+
+# Cấu hình email
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'lethanhloc2612004@gmail.com'  # Thay bằng email của bạn
+EMAIL_HOST_PASSWORD = 'gqhn khbs wxzl ydgc'  # Thay bằng App Password của bạn
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Bật mã hóa STARTTLS
+
+# Tên và URL trang web (tùy chọn)
+SITE_NAME = 'Beee'  # Thay bằng tên trang web của bạn
+SITE_URL = 'http://127.0.0.1:8000'  # Thay bằng URL trang web của bạn
+# Trong môi trường phát triển (HTTP)
+SESSION_COOKIE_SECURE = False  # Đặt thành True chỉ khi dùng HTTPS
+SESSION_COOKIE_SAMESITE = 'Lax'  # Thay đổi từ 'None'
+CSRF_COOKIE_SECURE = False  # Đặt thành True chỉ khi dùng HTTPS

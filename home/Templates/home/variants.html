@@ -10,15 +10,16 @@
     <div class="lot">
 
 
-        
+
         <div class="product-image">
             <img id="main-image" src="" alt="{{ product.name }}">
         </div>
 
         <div class="product-info">
-            <h1>{{ product.name }}</h1>
-            <p>{{ product.description }}</p>
-
+            <div class="lot">
+                <h1> Tên sản phẩm: {{ product.name }}</h1>
+                <p> Mô tả: {{ product.description }}</p>
+            </div>
             <div class="color-selection">
                 <p>Màu sắc:</p>
                 <div id="color-options">
@@ -42,10 +43,12 @@
                 <input type="number" id="quantity" class="quantity-input" value="1" min="1"
                     onchange="validateQuantity()">
                 <button class="quantity-button" onclick="increaseQuantity()">+</button>
+                
             </div>
 
             <div class="product-details">
                 <p id="price"></p>
+                <p id="giamgia"></p>
                 <p id="stock"></p>
             </div>
 
@@ -60,12 +63,137 @@
         </div>
     </div>
 </div>
+<div class="khung-danh-gia mt-6">
+    <div class="tieu-de-va-diem-trung-binh flex justify-between items-center mb-4">
+        <h3 class="tieu-de-danh-gia text-xl font-semibold">Đánh giá sản phẩm</h3>
+        
+        {% if product_ratings %}
+            <div class="diem-trung-binh flex items-center">
+                <div class="so-sao mr-2">
+                    {% if average_rating >= 4.5 %}★★★★★
+                    {% elif average_rating >= 3.5 %}★★★★☆
+                    {% elif average_rating >= 2.5 %}★★★☆☆
+                    {% elif average_rating >= 1.5 %}★★☆☆☆
+                    {% else %}★☆☆☆☆
+                    {% endif %}
+                </div>
+                <div class="chi-tiet-diem-trung-binh text-gray-700">
+                    {{ average_rating }}/5 ({{ total_ratings }} Đánh giá)
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    {% if product_ratings %}
+        <div class="danh-sach-danh-gia space-y-4">
+            {% for rating in product_ratings %}
+                <div class="mot-danh-gia border-b pb-4 review-item {% if forloop.counter > 2 %}initially-hidden{% endif %}" 
+                     style="{% if forloop.counter > 2 %}display: none; opacity: 0;{% endif %}">
+                    <div class="tieu-de-danh-gia flex justify-between items-center mb-2">
+                        <div class="thong-tin-nguoi-danh-gia">
+                            <span class="ten-nguoi-danh-gia font-medium">{{ rating.user.username }}</span>
+                            <span class="thoi-gian-danh-gia text-gray-500 text-sm ml-2">{{ rating.created_at|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        
+                        <div class="danh-gia-san-pham">
+                            <div class="so-sao">
+                                {% if rating.rating == 1 %}★☆☆☆☆
+                                {% elif rating.rating == 2 %}★★☆☆☆
+                                {% elif rating.rating == 3 %}★★★☆☆
+                                {% elif rating.rating == 4 %}★★★★☆
+                                {% else %}★★★★★
+                                {% endif %}
+                            </div>
+                            
+                            <div class="bien-the">
+                                Biến thể: {{ rating.product_variant.color }} - {{ rating.product_variant.size }}
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                    {% if rating.comment %}
+                        <div class="noi-dung-danh-gia text-gray-700">
+                            {{ rating.comment }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if product_ratings.count > 2 %}
+            <div class="text-center mt-4">
+                <button onclick="toggleReviews()" 
+                        id="show-more-btn" 
+                        class="anhien px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all duration-300">
+                    Xem thêm {{ product_ratings.count|add:"-2" }} đánh giá
+                </button>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="khong-co-danh-gia text-center text-gray-500 py-4">
+            Chưa có đánh giá nào cho sản phẩm này
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .review-item {
+        transition: all 0.5s ease-in-out;
+        max-height: 1000px;
+        overflow: hidden;
+    }
+    
+    .review-item.collapsed {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-width: 0;
+    }
+</style>
+
+<script>
+    function toggleReviews() {
+        const hiddenReviews = document.querySelectorAll('.initially-hidden');
+        const btn = document.getElementById('show-more-btn');
+        
+        if (btn.textContent.includes('Xem thêm')) {
+            // Hiển thị các đánh giá
+            hiddenReviews.forEach((review, index) => {
+                setTimeout(() => {
+                    review.style.display = 'block';
+                    requestAnimationFrame(() => {
+                        review.style.opacity = '1';
+                        review.style.maxHeight = '1000px';
+                    });
+                }, index * 100); // Delay giữa các đánh giá
+            });
+            
+            btn.textContent = 'Ẩn bớt';
+        } else {
+            // Ẩn các đánh giá
+            hiddenReviews.forEach((review, index) => {
+                review.style.opacity = '0';
+                review.style.maxHeight = '0';
+                
+                setTimeout(() => {
+                    review.style.display = 'none';
+                }, 500); // Thời gian animation
+            });
+            
+            btn.textContent = `Xem thêm {{ product_ratings.count|add:"-2" }} đánh giá`;
+        }
+    }
+</script>   
 <div class="danhsachspnnm">
-    <h4 class="dmsp">CÓ THỂ BẠN SẼ THÍCH</h4>
+    <h4 class="dmsp">CÓ THỂ BẠN CŨNG THÍCH</h4>
     <div class="chuasp">
-        {% for item in product_random|slice:":5" %}
+        {% for item in recommended_products %}
         <div class="sp">
-            <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+            <a href="{% url 'product_detail' product_id=item.product.id %}"
+                style="text-decoration: none; color: inherit;">
                 <div class="lot">
                     <div class="chuaanh">
                         <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
@@ -90,6 +218,68 @@
 <script>
     const variantsData = {{ variants_json| safe }};
     const addToCartUrl = "{% url 'add_to_cart' %}"
+    var loginUrl = "{% url 'login' %}"
 </script>
+<style>
+.diem-trung-binh{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.tieu-de-va-diem-trung-binh{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.mot-danh-gia{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.khung-danh-gia{
+    padding-left: 30px;
+    padding-top: 40px;
+    border-top: 1px solid #e0e0e0;
+}
+.anhien{
+    color: #fff !important;
+    border-radius: 12px;
+    background-color: #000;
+}
+.anhien:hover{
+    background-color: #000;
+    transform: scale(1.1);
+    text-shadow: 0 0 5px #fff;
+    transition: 0.3s;
+}
+.danh-gia-san-pham {
+    font-family: Arial, sans-serif;
+}
 
+.thong-tin-danh-gia {
+    color: #888;
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+.ten-nguoi-danh-gia {
+    margin-right: 10px;
+}
+
+.so-sao {
+    color: #FFD700;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.bien-the {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.noi-dung-danh-gia {
+    color: #333;
+}
+</style>
 {% endblock%}

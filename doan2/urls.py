@@ -18,10 +18,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from home import views as home
+from django.views.generic.base import RedirectView
 urlpatterns = [
     # include tới urls.py của home
-    path('login-client/', include("home.urls"))
+    path('login-client/', include("home.urls")),
+    # url cho phần login google dùng để trả về trang chủ sau khi login thành công
+    path('accounts/google/login/callback/', home.google_callback, name='google_callback'),
+    path('',RedirectView.as_view(url='login-client/home/', permanent=False), name='index'),
+    path('social-auth/', include('social_django.urls', namespace='social'), name='socialf'),
+    path('paypal/', include('paypal.standard.ipn.urls')),
+    path('payment-done/', home.payment_done, name='payment_done'),
+    path('payment-canceled/', home.payment_canceled, name='payment_canceled'),      
+
 ]
 # Chỉ thêm cấu hình phục vụ media khi đang trong môi trường phát triển
 if settings.DEBUG:

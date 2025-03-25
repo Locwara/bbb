@@ -1,5 +1,6 @@
-
+    // Dữ liệu về các biến thể sản phẩm
     function getCookie(name) {
+        // Hàm lấy giá trị của cookie theo tên
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
@@ -88,6 +89,11 @@
             document.getElementById('size-options').style.borderRadius='12px';
         });
         
+        // Ensure currentVariant is set here
+        if (selectedColor && selectedSize) {
+            currentVariant = variantsData[selectedColor].sizes.find(s => s.size === selectedSize);
+        }
+        
         updateProductInfo();
         resetQuantity();
         updateVariantInfo();
@@ -96,19 +102,24 @@
     
     function updateProductInfo() {
         const priceElement = document.getElementById('price');
+        const giamgiaElement = document.getElementById('giamgia');
         const stockElement = document.getElementById('stock');
         const addToCartButton = document.getElementById('add-to-cart');
         
         // Thêm lớp để kích hoạt hiệu ứng fade-out
         priceElement.classList.add('fade-out');
         stockElement.classList.add('fade-out');
+        giamgiaElement.classList.add('fade-out');
         
         // Đợi animation fade-out hoàn tất rồi mới cập nhật nội dung
         setTimeout(() => {
             if (selectedColor && selectedSize) {
                 currentVariant = variantsData[selectedColor].sizes.find(s => s.size === selectedSize);
+                console.log("Current variant đã được thiết lập:", currentVariant);
                 if (currentVariant) {
-                    priceElement.textContent = `Giá: ${formatPrice(currentVariant.price)}`;
+                    // dòng này sẽ hiển thị giá và phần trăm giảm giá
+                    priceElement.textContent = `Giá: ` + formatPrice(currentVariant.price) + ` - ${currentVariant.discount_percent}%`;
+                    giamgiaElement.textContent = 'Giảm giá: ' +  formatPrice(currentVariant.discount_price);
                     stockElement.textContent = `Còn lại: ${currentVariant.stock} sản phẩm`;
                     addToCartButton.disabled = currentVariant.stock === 0;
                     
@@ -123,6 +134,7 @@
                 currentVariant = null;
                 priceElement.textContent = '';
                 stockElement.textContent = '';
+                giamgiaElement.textContent = '';
                 addToCartButton.disabled = true;
                 addToCartButton.classList.remove('button-active');
             }
@@ -130,13 +142,17 @@
             // Xóa lớp fade-out và thêm lớp fade-in
             priceElement.classList.remove('fade-out');
             stockElement.classList.remove('fade-out');
+            giamgiaElement.classList.remove('fade-out');
             priceElement.classList.add('fade-in');
             stockElement.classList.add('fade-in');
+            giamgiaElement.classList.add('fade-in');
+
             
             // Xóa lớp fade-in sau khi animation hoàn tất
             setTimeout(() => {
                 priceElement.classList.remove('fade-in');
                 stockElement.classList.remove('fade-in');
+                giamgiaElement.classList.remove('fade-in');
             }, 500);
         }, 150);
     }
@@ -175,7 +191,7 @@
         const quantityInput = document.getElementById('quantity');
         let quantity = parseInt(quantityInput.value);
         
-        if (isNaN(quantity) || quantity < 1) {
+        if (isNaN(quantity) || quantity < 1) {  
             quantity = 1;
         }
         
@@ -220,6 +236,7 @@
     }
     
     function updatePriceInfo() {
+        console.log("updatePriceInfo được gọi. Current variant:", currentVariant);
         const unitPriceElement = document.getElementById('unit-price');
         const quantityDisplayElement = document.getElementById('quantity-display');
         const totalPriceElement = document.getElementById('total-price');
@@ -233,7 +250,7 @@
         // Đợi animation fade-out hoàn tất rồi mới cập nhật nội dung
         setTimeout(() => {
             if (currentVariant) {
-                const unitPrice = parseFloat(currentVariant.price);
+                const unitPrice = parseFloat(currentVariant.discount_price);
                 const totalPrice = unitPrice * quantity;
             
                 unitPriceElement.textContent = formatPrice(unitPrice);
@@ -301,6 +318,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Có lỗi xảy ra khi thêm vào giỏ hàng: ' + error.message);
+            alert('Vui lòng đăng nhập trước khi thêm vào giỏ hàng');
+            window.location.href = loginUrl;
         });
     }

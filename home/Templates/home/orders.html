@@ -1,0 +1,103 @@
+{% extends 'home/home.html' %}
+
+{% block title %}Danh sách đơn hàng{% endblock %}
+
+{% block content %}
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="container my-4">
+    <h2 class="text-center mb-4" style="color: #2e7d32;">Đơn hàng của tôi</h2>
+
+    <!-- Bộ lọc trạng thái -->
+    <div class="card mb-4" style="border-color: #81c784;">
+        <div class="card-body" style="background-color: #f1f8e9;">
+            <div class="d-flex justify-content-center">
+                <div class="btn-group">
+                    <a href="{% url 'order_list' %}"
+                        class="btn {% if current_status == 'all' %}btn-success{% else %}btn-outline-success{% endif %}">
+                        Tất cả
+                    </a>
+                    <a href="{% url 'order_list' %}?status=pending"
+                        class="btn {% if current_status == 'pending' %}btn-success{% else %}btn-outline-success{% endif %}">
+                        Chờ xử lý
+                    </a>
+                    <a href="{% url 'order_list' %}?status=accept"
+                        class="btn {% if current_status == 'accept' %}btn-success{% else %}btn-outline-success{% endif %}">
+                        Đang giao
+                    </a>
+                    <a href="{% url 'order_list' %}?status=done"
+                        class="btn {% if current_status == 'done' %}btn-success{% else %}btn-outline-success{% endif %}">
+                        Đã giao
+                    </a>
+                    <a href="{% url 'order_list' %}?status=cancelled"
+                        class="btn {% if current_status == 'cancelled' %}btn-success{% else %}btn-outline-success{% endif %}">
+                        Đã hủy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách đơn hàng -->
+    {% if orders %}
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100" style="border-color: #81c784;">
+                <div class="card-header" style="background-color: #c8e6c9; color: #2e7d32;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Đơn hàng #{{ order.id }}</h5>
+                        <span class="badge 
+                                    {% if order.status == 'pending' %}bg-warning
+                                    {% elif order.status == 'accept' %}bg-primary
+                                    {% elif order.status == 'done' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                            {% if order.status == 'pending' %}Chờ xử lý
+                            {% elif order.status == 'accept' %}Đang giao
+                            {% elif order.status == 'done' %}Đã giao
+                            {% elif order.status == 'cancelled' %}Đã hủy
+                            {% else %}{{ order.status }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p><strong>Ngày đặt:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Tổng tiền:</strong> {{ order.total_amount|floatformat:0 }}₫</p>
+                    <p><strong>Phương thức thanh toán:</strong> {{ order.payment_method }}</p>
+                    {% if order.address %}
+                    <p><strong>Địa chỉ:</strong> {{ order.address.street }}, {{ order.address.ward }}, {{ order.address.district }}, {{ order.address.city }}</p>
+                    {% endif %}
+                    {% if order.status == 'done' %}
+                    <div class="card-footer">
+                        {% for item in order.items.all %}
+                            {% if not item.userrating_set.exists %}
+                                <a href="{% url 'rate_order_item' item.id %}" class="btn btn-success btn-sm">
+                                    Đánh giá sản phẩm {{ item.product_variant.product.name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                </div>
+                <div class="card-footer" style="background-color: #f1f8e9;">
+                    <a href="{% url 'order_detail' order.id %}" class="btn btn-success btn-sm w-100">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert"
+        style="background-color: #e8f5e9; border-color: #81c784; color: #2e7d32;">
+        Bạn chưa có đơn hàng nào {% if current_status != 'all' %}với trạng thái này{% endif %}.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

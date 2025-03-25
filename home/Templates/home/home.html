@@ -21,7 +21,8 @@
             <div class="lotlogonut">
                 <div class="chualogohd">
                     <div class="logohd">
-                        <img src="{% static '/home/images/logo2.png' %}" alt="">
+                        <img onclick="window.location.href='{% url 'home' %}'"
+                            src="{% static '/home/images/logo2.png' %}" alt="">
                     </div>
                 </div>
                 <div class="chuanuthd">
@@ -42,10 +43,10 @@
                 </div>
                 <div class="chuaicon">
                     <div class="icon">
-                        <i class="bi bi-cart"></i>
+                        <i class="bi bi-cart" onclick="window.location.href='{% url 'cart' %}'"></i>
                     </div>
                     <div class="icon">
-                        <i class="bi bi-person-circle"></i>
+                        <i onclick="window.location.href='{% url 'profile' %}'" class="bi bi-person-circle"></i>
                     </div>
                 </div>
             </div>
@@ -53,30 +54,30 @@
     </div>
     {% block content %}
     <div id="main">
-        
+
         <div class="slider-container">
             <div class="slide active">
                 <img class="slideimg" src="{% static 'home/images/phong-nen-chup-anh-quan-ao-01.jpg' %}" alt="">
                 <img src="{% static 'home/images/logo3.png' %}" class="logosd" alt="">
             </div>
-            
+
             <div class="slide">
                 <img class="slideimg" src="{% static 'home/images/sd1.jpg' %}" class="logosd" alt="">
             </div>
-            
+
             <div class="slide">
                 <img class="slideimg" src="{% static 'home/images/sd2.jpg' %}" class="logosd" alt="">
             </div>
-            
+
             <div class="slide">
                 <img class="slideimg" src="{% static 'home/images/sd3.jpg' %}" alt="">
                 <img src="{% static 'home/images/logo3.png' %}" class="logosd" alt="">
             </div>
-            
+
             <!-- Nút điều hướng -->
             <div class="prev">&#10094;</div>
             <div class="next">&#10095;</div>
-            
+
             <!-- Chỉ báo dots -->
             <div class="dots-container">
                 <span class="dot active" data-index="0"></span>
@@ -113,17 +114,17 @@
         </div>
         <h4 class="dmsp">DANH MỤC SẢN PHẨM</h4>
         <div class="danhmucs">
-                <div class="danhmuc">
-                    <div class="lot">
-                        <div class="img">
-                            <img src="{% static 'home/images/ao.webp' %}" alt="">
-                        </div>
+            <div class="danhmuc">
+                <div class="lot">
+                    <div class="img">
+                        <img src="{% static 'home/images/ao.webp' %}" alt="">
+                    </div>
 
-                        <div class="noidung">
-                            <p>ÁO</p>
-                        </div>
+                    <div class="noidung">
+                        <p>ÁO</p>
                     </div>
                 </div>
+            </div>
             <div class="danhmuc">
                 <div class="lot">
                     <div class="img">
@@ -152,7 +153,8 @@
             <div class="chuasp">
                 {% for item in product_random|slice:":5" %}
                 <div class="sp">
-                    <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+                    <a href="{% url 'product_detail' product_id=item.product.id %}"
+                        style="text-decoration: none; color: inherit;">
                         <div class="lot">
                             <div class="chuaanh">
                                 <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
@@ -178,7 +180,8 @@
             <div class="chuasp">
                 {% for item in product_random1|slice:":5" %}
                 <div class="sp">
-                    <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+                    <a href="{% url 'product_detail' product_id=item.product.id %}"
+                        style="text-decoration: none; color: inherit;">
                         <div class="lot">
                             <div class="chuaanh">
                                 <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
@@ -209,7 +212,8 @@
                     <p class="cuoi">Deals</p>
                 </div>
                 <div class="bn">
-                    <img src="{% static 'home/images/pngtree-a-colorful-flower-wallpaper-that-says-blue-and-pink-blossoms-charming-image_16292891.jpg' %}" alt="">
+                    <img src="{% static 'home/images/pngtree-a-colorful-flower-wallpaper-that-says-blue-and-pink-blossoms-charming-image_16292891.jpg' %}"
+                        alt="">
                     <img class="logobn" src="{% static 'home/images/logo3.png' %}" alt="">
                     <p class="dau1">Style</p>
                     <br>
@@ -223,7 +227,8 @@
         <div class="chuasp">
             {% for item in product_ao|slice:":5" %}
             <div class="sp">
-                <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+                <a href="{% url 'product_detail' product_id=item.product.id %}"
+                    style="text-decoration: none; color: inherit;">
                     <div class="lot">
                         <div class="chuaanh">
                             <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
@@ -243,13 +248,15 @@
             </div>
             {% endfor %}
         </div>
+
     </div>
     <div class="danhsachspnnm">
         <h4 class="dmsp">QUẦN</h4>
         <div class="chuasp">
             {% for item in product_quan|slice:":5" %}
             <div class="sp">
-                <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+                <a href="{% url 'product_detail' product_id=item.product.id %}"
+                    style="text-decoration: none; color: inherit;">
                     <div class="lot">
                         <div class="chuaanh">
                             <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
@@ -275,7 +282,8 @@
         <div class="chuasp">
             {% for item in product_vay|slice:":5" %}
             <div class="sp">
-                <a href="{% url 'product_detail' product_id=item.product.id %}" style="text-decoration: none; color: inherit;">
+                <a href="{% url 'product_detail' product_id=item.product.id %}"
+                    style="text-decoration: none; color: inherit;">
                     <div class="lot">
                         <div class="chuaanh">
                             <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
@@ -296,7 +304,7 @@
             {% endfor %}
         </div>
     </div>
-    
+
     <script src="{% static 'home/js/home.js' %}"></script>
     {% endblock %}
     <div class="ganfooter">
@@ -318,10 +326,16 @@
                         Beee - Định Nghĩa Phong Cách Của Phái Đẹp
                     </p>
                     <p>
-                        Beee tự hào là điểm đến lý tưởng cho những người phụ nữ hiện đại đang tìm kiếm phong cách thời trang độc đáo và đẳng cấp. Với sứ mệnh tôn vinh vẻ đẹp và cá tính của từng khách hàng, chúng tôi mang đến những bộ sưu tập thời trang đa dạng, từ trang phục công sở thanh lịch đến những set đồ dạo phố trẻ trung, năng động.
-Đến với Beee, quý khách không chỉ được trải nghiệm những thiết kế thời thượng, chất liệu cao cấp mà còn nhận được sự tư vấn tận tâm để tìm ra phong cách phù hợp nhất với cá tính riêng. Chúng tôi tin rằng: "Mỗi người phụ nữ đều xứng đáng tỏa sáng theo cách riêng của mình."
-Beee - Nơi phong cách được định nghĩa và vẻ đẹp được tôn vinh.
-Bạn thấy bài giới thiệu này thế nào? Tôi có thể điều chỉnh để phù hợp hơn với định hướng của shop của bạn.
+                        Beee tự hào là điểm đến lý tưởng cho những người phụ nữ hiện đại đang tìm kiếm phong cách thời
+                        trang độc đáo và đẳng cấp. Với sứ mệnh tôn vinh vẻ đẹp và cá tính của từng khách hàng, chúng tôi
+                        mang đến những bộ sưu tập thời trang đa dạng, từ trang phục công sở thanh lịch đến những set đồ
+                        dạo phố trẻ trung, năng động.
+                        Đến với Beee, quý khách không chỉ được trải nghiệm những thiết kế thời thượng, chất liệu cao cấp
+                        mà còn nhận được sự tư vấn tận tâm để tìm ra phong cách phù hợp nhất với cá tính riêng. Chúng
+                        tôi tin rằng: "Mỗi người phụ nữ đều xứng đáng tỏa sáng theo cách riêng của mình."
+                        Beee - Nơi phong cách được định nghĩa và vẻ đẹp được tôn vinh.
+                        Bạn thấy bài giới thiệu này thế nào? Tôi có thể điều chỉnh để phù hợp hơn với định hướng của
+                        shop của bạn.
                     </p>
                 </div>
             </div>
@@ -334,63 +348,80 @@ Bạn thấy bài giới thiệu này thế nào? Tôi có thể điều chỉnh
                 <div class="lot">
                     <h4>Beee</h4>
                     <div class="chuamotaft">
-                        <p class="gtft">Beee là thiên đường thời trang dành cho phái đẹp, nơi hội tụ những bộ sưu tập độc đáo và tinh tế. Với đa dạng các thiết kế từ công sở thanh lịch đến dạo phố trẻ trung, chúng tôi cam kết mang đến những sản phẩm chất lượng cao cấp, giúp phụ nữ tự tin tỏa sáng trong mọi khoảnh khắc của cuộc sống.</p>
+                        <p class="gtft">Beee là thiên đường thời trang dành cho phái đẹp, nơi hội tụ những bộ sưu tập
+                            độc đáo và tinh tế. Với đa dạng các thiết kế từ công sở thanh lịch đến dạo phố trẻ trung,
+                            chúng tôi cam kết mang đến những sản phẩm chất lượng cao cấp, giúp phụ nữ tự tin tỏa sáng
+                            trong mọi khoảnh khắc của cuộc sống.</p>
                     </div>
-                    
+
                     <div class="chuaicon">
-                        <svg onclick="window.location.href='https://www.facebook.com/thanhloc.le.5473/'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                        <svg onclick="window.location.href='https://www.facebook.com/thanhloc.le.5473/'"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                             <!-- Base with gradient -->
                             <defs>
-                              <linearGradient id="fb-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#18ADFF"/>
-                                <stop offset="100%" style="stop-color:#0063E1"/>
-                              </linearGradient>
+                                <linearGradient id="fb-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#18ADFF" />
+                                    <stop offset="100%" style="stop-color:#0063E1" />
+                                </linearGradient>
                             </defs>
-                            
+
                             <!-- Main rounded rectangle with shadow -->
-                            <rect x="2" y="2" width="44" height="44" rx="8" fill="url(#fb-gradient)"/>
-                            <rect x="4" y="4" width="40" height="40" rx="6" fill="url(#fb-gradient)"/>
-                            
+                            <rect x="2" y="2" width="44" height="44" rx="8" fill="url(#fb-gradient)" />
+                            <rect x="4" y="4" width="40" height="40" rx="6" fill="url(#fb-gradient)" />
+
                             <!-- Facebook logo with more detailed path -->
-                            <path d="M33.5 25h-6.25v14c0 0.552-0.448 1-1 1h-5c-0.552 0-1-0.448-1-1V25h-4c-0.552 0-1-0.448-1-1v-4.5c0-0.552 0.448-1 1-1h4v-3.75c0-4.77 2.925-7.375 7.175-7.375 1.438 0 2.675 0.105 3.775 0.315 0.5 0.096 0.8 0.535 0.8 1.042v4.5c0 0.552-0.448 1-1 1h-2.66c-2.32 0-2.775 1.102-2.775 2.724v2.544h5.54c0.598 0 1.055 0.525 0.977 1.117l-0.54 4.5c-0.066 0.51-0.496 0.883-1.007 0.883z" fill="white"/>
-                            
+                            <path
+                                d="M33.5 25h-6.25v14c0 0.552-0.448 1-1 1h-5c-0.552 0-1-0.448-1-1V25h-4c-0.552 0-1-0.448-1-1v-4.5c0-0.552 0.448-1 1-1h4v-3.75c0-4.77 2.925-7.375 7.175-7.375 1.438 0 2.675 0.105 3.775 0.315 0.5 0.096 0.8 0.535 0.8 1.042v4.5c0 0.552-0.448 1-1 1h-2.66c-2.32 0-2.775 1.102-2.775 2.724v2.544h5.54c0.598 0 1.055 0.525 0.977 1.117l-0.54 4.5c-0.066 0.51-0.496 0.883-1.007 0.883z"
+                                fill="white" />
+
                             <!-- Highlight and shadow effects -->
-                            <path d="M26.25 25v14c0 0.552-0.448 1-1 1h-5c-0.552 0-1-0.448-1-1V25h-4c-0.552 0-1-0.448-1-1v-4.5c0-0.552 0.448-1 1-1h4v-3.75c0-4.77 2.925-7.375 7.175-7.375 0.359 0 0.697 0.006 1.018 0.02" fill-opacity="0.15" fill="white"/>
-                          </svg>
-                          <svg onclick="window.location.href='https://www.youtube.com/@lethanhloc8371'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                            <path
+                                d="M26.25 25v14c0 0.552-0.448 1-1 1h-5c-0.552 0-1-0.448-1-1V25h-4c-0.552 0-1-0.448-1-1v-4.5c0-0.552 0.448-1 1-1h4v-3.75c0-4.77 2.925-7.375 7.175-7.375 0.359 0 0.697 0.006 1.018 0.02"
+                                fill-opacity="0.15" fill="white" />
+                        </svg>
+                        <svg onclick="window.location.href='https://www.youtube.com/@lethanhloc8371'"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                             <!-- Definitions for gradients and effects -->
                             <defs>
-                              <linearGradient id="yt-red-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#FF5252"/>
-                                <stop offset="100%" style="stop-color:#D32F2F"/>
-                              </linearGradient>
-                              <filter id="yt-shadow" x="-10%" y="-10%" width="120%" height="120%">
-                                <feDropShadow dx="0" dy="1" stdDeviation="0.5" flood-opacity="0.3"/>
-                              </filter>
+                                <linearGradient id="yt-red-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#FF5252" />
+                                    <stop offset="100%" style="stop-color:#D32F2F" />
+                                </linearGradient>
+                                <filter id="yt-shadow" x="-10%" y="-10%" width="120%" height="120%">
+                                    <feDropShadow dx="0" dy="1" stdDeviation="0.5" flood-opacity="0.3" />
+                                </filter>
                             </defs>
-                            
+
                             <!-- Background shape -->
-                            <rect width="48" height="48" rx="12" fill="#FFFFFF"/>
-                            
+                            <rect width="48" height="48" rx="12" fill="#FFFFFF" />
+
                             <!-- YouTube Play Button Shape -->
-                            <rect x="4" y="10" width="40" height="28" rx="8" fill="url(#yt-red-gradient)" filter="url(#yt-shadow)"/>
-                            
+                            <rect x="4" y="10" width="40" height="28" rx="8" fill="url(#yt-red-gradient)"
+                                filter="url(#yt-shadow)" />
+
                             <!-- Play Button Triangle -->
-                            <path d="M32 24L19 32V16L32 24Z" fill="white" filter="url(#yt-shadow)"/>
-                            
+                            <path d="M32 24L19 32V16L32 24Z" fill="white" filter="url(#yt-shadow)" />
+
                             <!-- Highlight effects -->
-                            <path d="M4 18C4 13.582 7.582 10 12 10H36C40.418 10 44 13.582 44 18V19C44 14.582 40.418 11 36 11H12C7.582 11 4 14.582 4 19V18Z" fill="white" fill-opacity="0.3"/>
-                            
+                            <path
+                                d="M4 18C4 13.582 7.582 10 12 10H36C40.418 10 44 13.582 44 18V19C44 14.582 40.418 11 36 11H12C7.582 11 4 14.582 4 19V18Z"
+                                fill="white" fill-opacity="0.3" />
+
                             <!-- Bottom shadow -->
-                            <path d="M4 30C4 34.418 7.582 38 12 38H36C40.418 38 44 34.418 44 30V29C44 33.418 40.418 37 36 37H12C7.582 37 4 33.418 4 29V30Z" fill="black" fill-opacity="0.1"/>
-                          </svg>
-                          <svg onclick="window.location.href='https://www.tiktok.com/@lethanhloc2004261?lang=vi-VN'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                            <path
+                                d="M4 30C4 34.418 7.582 38 12 38H36C40.418 38 44 34.418 44 30V29C44 33.418 40.418 37 36 37H12C7.582 37 4 33.418 4 29V30Z"
+                                fill="black" fill-opacity="0.1" />
+                        </svg>
+                        <svg onclick="window.location.href='https://www.tiktok.com/@lethanhloc2004261?lang=vi-VN'"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                             <!-- Black background -->
-                            <rect width="48" height="48" rx="8" fill="#000000"/>
-                            
+                            <rect width="48" height="48" rx="8" fill="#000000" />
+
                             <!-- Ultra simplified TikTok logo in white -->
-                            <path d="M32 16c-1.5 0-3-1-4-2v-2h-7v22c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.5 0 1 .1 1.5.3v-5.5c-5 .5-9 4.8-9 9.9 0 5.5 4.5 10 10 10s10-4.5 10-10V22c2 1 4 1.5 6 1.5v-7c-1.7 0-3.5-.5-3.5-.5z" fill="white"/>
-                          </svg>
+                            <path
+                                d="M32 16c-1.5 0-3-1-4-2v-2h-7v22c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.5 0 1 .1 1.5.3v-5.5c-5 .5-9 4.8-9 9.9 0 5.5 4.5 10 10 10s10-4.5 10-10V22c2 1 4 1.5 6 1.5v-7c-1.7 0-3.5-.5-3.5-.5z"
+                                fill="white" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -419,7 +450,8 @@ Bạn thấy bài giới thiệu này thế nào? Tôi có thể điều chỉnh
                     <h4>THÔNG TIN LIÊN HỆ</h4>
                     <div class="chuamotaft">
                         <p class="gtv">TÊN: LÊ THÀNH LỘC</p>
-                        <div class="chuadcft"><p class="dcft">ĐỊA CHỈ: </p>
+                        <div class="chuadcft">
+                            <p class="dcft">ĐỊA CHỈ: </p>
                             <p class="dc">
                                 25/5 Phước Thới, Ô môn, Cần thơ
                             </p>
@@ -429,12 +461,139 @@ Bạn thấy bài giới thiệu này thế nào? Tôi có thể điều chỉnh
                             <p class="dcft">EMAIL: </p>
                             <p class="dc">lethanhloc2612004@gmail.com</p>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    <script>
+        // JavaScript cho hiệu ứng chuyển trang
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            // Hiển thị loading khi trang bắt đầu tải
+            showLoading();
+
+            // Ẩn loading khi trang đã tải xong
+            window.addEventListener('load', function () {
+                hideLoading();
+            });
+
+            // Hiển thị loading khi click vào các link chuyển trang
+            setupLinkListeners();
+
+            // Hiệu ứng loading khi sử dụng nút Back/Forward của trình duyệt
+            window.addEventListener('popstate', function () {
+                showLoading();
+            });
+
+            // Hàm thiết lập sự kiện cho các link
+            function setupLinkListeners() {
+                // Lấy tất cả các link trên trang (trừ các link có thuộc tính no-loading)
+                const links = document.querySelectorAll('a:not([data-no-loading])');
+
+                links.forEach(link => {
+                    // Kiểm tra nếu link dẫn đến trang khác (không phải # hoặc javascript:)
+                    if (link.getAttribute('href') &&
+                        !link.getAttribute('href').startsWith('#') &&
+                        !link.getAttribute('href').startsWith('javascript:') &&
+                        !link.getAttribute('target')) {
+
+                        link.addEventListener('click', function (e) {
+                            // Lấy URL đích
+                            const targetUrl = link.getAttribute('href');
+
+                            // Nếu URL không phải là external link (link ra bên ngoài website)
+                            if (targetUrl.indexOf(window.location.hostname) > -1 ||
+                                targetUrl.startsWith('/')) {
+                                e.preventDefault();
+                                showLoading();
+
+                                // Chuyển hướng sau một khoảng thời gian ngắn để hiệu ứng được hiển thị
+                                setTimeout(function () {
+                                    window.location.href = targetUrl;
+                                }, 300);
+                            }
+                        });
+                    }
+                });
+
+                // Xử lý riêng cho các nút danh mục
+                const categoryButtons = document.querySelectorAll('.nut, .danhmuc');
+                categoryButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        showLoading();
+                        // Trong thực tế, cần thêm mã để chuyển đến URL tương ứng
+                    });
+                });
+            }
+
+            // Hàm hiển thị loading
+            function showLoading() {
+                document.body.classList.add('loading-active');
+                loadingOverlay.classList.add('active');
+
+                // Thêm class loading vào các phần nội dung chính
+                const mainContent = document.getElementById('main');
+                if (mainContent) {
+                    mainContent.classList.add('loading');
+                }
+
+                const productLists = document.querySelectorAll('.danhsachspnnm');
+                productLists.forEach(list => {
+                    list.classList.add('loading');
+                });
+                const headerss = document.querySelectorAll('.chuaheader');
+                productLists.forEach(list => {
+                    list.classList.add('loading');
+                });
+            }
+
+            // Hàm ẩn loading
+            function hideLoading() {
+                setTimeout(function () {
+                    loadingOverlay.classList.remove('active');
+                    document.body.classList.remove('loading-active');
+
+                    // Xóa class loading khỏi các phần nội dung
+                    const mainContent = document.getElementById('main');
+                    if (mainContent) {
+                        mainContent.classList.remove('loading');
+                    }
+
+                    const productLists = document.querySelectorAll('.danhsachspnnm');
+                    productLists.forEach(list => {
+                        list.classList.remove('loading');
+                    });
+                }, 500); // Đợi 500ms để tạo hiệu ứng mượt mà
+            }
+
+            // Bắt sự kiện khi submit form tìm kiếm
+            const searchForm = document.querySelector('form[name="search"]');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function () {
+                    showLoading();
+                });
+            }
+
+            // Xử lý cho input tìm kiếm
+            const searchInput = document.querySelector('.searchhd');
+            if (searchInput) {
+                searchInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        showLoading();
+                        // Trong thực tế, cần thêm mã để xử lý tìm kiếm
+                    }
+                });
+            }
+        });
+    </script>
+
 </body>
 
 </html>

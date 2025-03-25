@@ -1,0 +1,265 @@
+{% extends 'home/home.html' %}
+
+{% block title %}Chi tiết đơn hàng #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center mb-4">
+                <a href="{% url 'order_list' %}" class="btn btn-outline-success me-3">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                <h2 style="color: #2e7d32; margin-bottom: 0;">Chi tiết đơn hàng #{{ order.id }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Thông tin đơn hàng -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="border-color: #81c784;">
+                <div class="card-header" style="background-color: #c8e6c9; color: #2e7d32;">
+                    <h5 class="mb-0">Thông tin đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Trạng thái:</strong> 
+                        <span class="badge 
+                            {% if order.status == 'pending' %}bg-warning
+                            {% elif order.status == 'accept' %}bg-primary
+                            {% elif order.status == 'done' %}bg-success
+                            {% else %}bg-secondary{% endif %}">
+                            {% if order.status == 'pending' %}Chờ xử lý
+                            {% elif order.status == 'accept' %}Đang giao
+                            {% elif order.status == 'done' %}Đã giao
+                            {% else %}{{ order.status }}{% endif %}
+                        </span>
+                    </p>
+                    <p><strong>Ngày đặt:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Cập nhật lần cuối:</strong> {{ order.updated_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Phương thức thanh toán:</strong> {{ order.payment_method }}</p>
+                    <p><strong>Trạng thái:</strong> {% if order.payment_status %} Đã thanh toán
+                    {% else %} Chưa thanh toán {% endif %}</p>
+                    <hr>
+                    <p><strong>Tổng tiền sản phẩm:</strong> {{ order.total_amount|add:order.discount_amount|floatformat:0 }}₫</p>
+                    {% if order.discount_amount > 0 %}
+                    <p><strong>Giảm giá:</strong> -{{ order.discount_amount|floatformat:0 }}₫</p>
+                    {% endif %}
+                    <p class="fw-bold" style="color: #2e7d32;"><strong>Tổng thanh toán:</strong> {{ order.total_amount|floatformat:0 }}₫</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Địa chỉ giao hàng -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="border-color: #81c784;">
+                <div class="card-header" style="background-color: #c8e6c9; color: #2e7d32;">
+                    <h5 class="mb-0">Địa chỉ giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Trạng thái:</strong> 
+                        <span class="badge 
+                            {% if order.status == 'pending' %}bg-warning
+                            {% elif order.status == 'accept' %}bg-primary
+                            {% elif order.status == 'done' %}bg-success
+                            {% elif order.status == 'cancelled' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {% if order.status == 'pending' %}Chờ xử lý
+                            {% elif order.status == 'accept' %}Đang giao
+                            {% elif order.status == 'done' %}Đã giao
+                            {% elif order.status == 'cancelled' %}Đã hủy
+                            {% else %}{{ order.status }}{% endif %}
+                        </span>
+                    </p>
+                
+                    {% if order.address %}
+                    <p><strong>Người nhận:</strong> {{ order.user.first_name }} {{ order.user.last_name }}</p>
+                    <p><strong>Số điện thoại:</strong> {{ order.customer_phone }}</p>
+                    <p><strong>Địa chỉ:</strong> {{ order.address.street }}</p>
+                    <p><strong>Phường/Xã:</strong> {{ order.address.ward }}</p>
+                    <p><strong>Quận/Huyện:</strong> {{ order.address.district }}</p>
+                    <p><strong>Thành phố:</strong> {{ order.address.city }}</p>
+                    {% if order.user.phone_number %}
+                    <p><strong>Số điện thoại:</strong> {{ order.user.phone_number }}</p>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-muted">Không có thông tin địa chỉ</p>
+                    {% endif %}
+                    {% if order.status == 'pending' %}
+                    <hr>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                            <i class="fas fa-times-circle"></i> Hủy đơn hàng
+                        </button>
+                    </div>
+                    {% endif %}
+                
+                </div>
+            </div>
+        </div>
+
+        <!-- Tiến trình đơn hàng -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="border-color: #81c784;">
+                <div class="card-header" style="background-color: #c8e6c9; color: #2e7d32;">
+                    <h5 class="mb-0">Tiến trình đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Đặt hàng thành công</h6>
+                                <small class="text-muted">{{ order.created_at|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="ms-3" style="border-left: 2px solid #81c784; height: 20px;"></div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="rounded-circle {% if order.status == 'pending' or order.status == 'accept' or order.status == 'done' %}bg-success{% else %}bg-secondary{% endif %} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    {% if order.status == 'pending' or order.status == 'accept' or order.status == 'done' %}
+                                    <i class="fas fa-check"></i>
+                                    {% else %}
+                                    <i class="fas fa-clock"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Đã xác nhận đơn hàng</h6>
+                                <small class="text-muted">{% if order.status == 'pending' %}Đang chờ xác nhận{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="ms-3" style="border-left: 2px solid #81c784; height: 20px;"></div>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="rounded-circle {% if order.status == 'accept' or order.status == 'done' %}bg-success{% else %}bg-secondary{% endif %} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    {% if order.status == 'accept' or order.status == 'done' %}
+                                    <i class="fas fa-check"></i>
+                                    {% else %}
+                                    <i class="fas fa-clock"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Đang giao hàng</h6>
+                                <small class="text-muted">{% if order.status != 'accept' and order.status != 'done' %}Chưa giao hàng{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="ms-3" style="border-left: 2px solid #81c784; height: 20px;"></div>
+                        
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <div class="rounded-circle {% if order.status == 'done' %}bg-success{% else %}bg-secondary{% endif %} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    {% if order.status == 'done' %}
+                                    <i class="fas fa-check"></i>
+                                    {% else %}
+                                    <i class="fas fa-clock"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Giao hàng thành công</h6>
+                                <small class="text-muted">{% if order.status != 'done' %}Chưa giao thành công{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách sản phẩm -->
+    <div class="card mb-4" style="border-color: #81c784;">
+        <div class="card-header" style="background-color: #c8e6c9; color: #2e7d32;">
+            <h5 class="mb-0">Sản phẩm đã đặt</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead style="background-color: #e8f5e9;">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order_items %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if item.product_variant.image %}
+                                    <img src="{{ item.product_variant.image.url }}" alt="{{ item.product_variant.product.name }}" class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ item.product_variant.product.name }}</h6>
+                                        <small class="text-muted">
+                                            Size: {{ item.product_variant.size }}, 
+                                            Màu: {{ item.product_variant.color }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ item.unit_price|floatformat:0 }}₫</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="text-end">{{ item.total_price|floatformat:0 }}₫</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot style="background-color: #e8f5e9;">
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
+                            <td class="text-end">{{ order.total_amount|add:order.discount_amount|floatformat:0 }}₫</td>
+                        </tr>
+                        {% if order.discount_amount > 0 %}
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Giảm giá:</strong></td>
+                            <td class="text-end">-{{ order.discount_amount|floatformat:0 }}₫</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Tổng thanh toán:</strong></td>
+                            <td class="text-end" style="color: #2e7d32; font-weight: bold;">{{ order.total_amount|floatformat:0 }}₫</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Thêm vào cuối file trước khi đóng block content -->
+{% if order.status == 'pending' %}
+<!-- Modal hủy đơn hàng -->
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelOrderModalLabel">Xác nhận hủy đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn hủy đơn hàng #{{ order.id }} không?</p>
+                <p><strong>Lưu ý:</strong> Hành động này không thể hoàn tác sau khi xác nhận.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <form action="{% url 'cancel_order' order.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
