@@ -100,7 +100,7 @@ def home(request):
     
     
     
-    # Thêm thông tin hình ảnh vào từng sản phẩm
+    # Thêm thông tin hìn    h ảnh vào từng sản phẩm
     # tạo các danh sách rỗng để chứa các sản phẩm tùy điều kiện lọc
     product_ao = []
     product_quan = []
@@ -155,13 +155,20 @@ def home(request):
         num_random = min(5, len(product_list))
         random_product = random.sample(product_list, num_random)
         product_random1 = random_product
+    ao_category = Category.objects.get(name='Áo')  # Điều chỉnh tên phù hợp
+    quan_category = Category.objects.get(name='Quần')
+    vay_category = Category.objects.get(name='Váy')
     # tạo một danh sách lưu biến và tham chiếu cho gọn tí 
     context = {'products': product_list,
                'product_ao': product_ao, 
                'product_quan': product_quan,
                'product_vay': product_vay, 
                'product_random': product_random, 
-               'product_random1': product_random1}
+               'product_random1': product_random1,
+               'ao_category_id': ao_category.id,
+               'quan_category_id': quan_category.id,
+               'vay_category_id': vay_category.id,
+               }
     #render qua trang chủ truyền thk danh sách nãy dô
     return render(request, 'home/home.html', context)
 # cho một đối tượng kế thừ từ thư viện DjangoJSONEncoder 
@@ -1410,12 +1417,13 @@ def rate_order_item(request, order_item_id):
 
     # Kiểm tra xem sản phẩm đã được đánh giá chưa
     existing_rating = UserRating.objects.filter(
-        user=request.user, 
-        product_variant=order_item.product_variant
+        user=request.user,
+        product_variant=order_item.product_variant,
+        order=order_item.order
     ).first()
-    
+
     if existing_rating:
-        messages.warning(request, 'Sản phẩm này đã được đánh giá')
+        messages.warning(request, 'Sản phẩm này đã được đánh giá trong đơn hàng này')
         return redirect('order_list')
     
     if request.method == 'POST':
@@ -1424,6 +1432,7 @@ def rate_order_item(request, order_item_id):
             rating = form.save(commit=False)
             rating.user = request.user
             rating.product_variant = order_item.product_variant
+            rating.order = order_item.order
             rating.save()
             messages.success(request, 'Đánh giá của bạn đã được ghi nhận')
             return redirect('order_list')
@@ -1435,3 +1444,150 @@ def rate_order_item(request, order_item_id):
         'order_item': order_item,
     }
     return render(request, 'home/rate_order_item.html', context)
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Order, Feedback
+from .forms import FeedbackForm
+
+def create_feedback(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # Kiểm tra xem đơn hàng đã được giao chưa
+    if order.status != 'done':
+        messages.error(request, 'Chỉ được phản hồi khi đơn hàng đã hoàn thành.')
+        return redirect('order_list', order_id=order_id)
+    
+    # Kiểm tra xem đã tồn tại feedback chưa
+    existing_feedback = Feedback.objects.filter(order=order).exists()
+    if existing_feedback:
+        messages.error(request, 'Bạn đã gửi phản hồi cho đơn hàng này rồi.')
+        return redirect('order_list', order_id=order_id)
+    
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, user=request.user, order=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cảm ơn bạn đã gửi phản hồi!')
+            return redirect('order_list')
+    else:
+        form = FeedbackForm(user=request.user, order=order)
+    
+    return render(request, 'home/feedback.html', {
+        'form': form,
+        'order': order
+    })
+    
+from django.shortcuts import render
+from django.db.models import Q
+from .models import Product, Category, Producttype, Productvariant
+
+def danh_sach_san_pham(request):
+    # Lấy các màu và size duy nhất từ variants
+    colors = Productvariant.objects.values_list('color', flat=True).distinct()
+    sizes = Productvariant.objects.values_list('size', flat=True).distinct()
+    
+    # Bắt đầu với tất cả sản phẩm
+    products = Product.objects.prefetch_related('variants').select_related('id_discount_percentage').all()
+    
+    # Lấy các tham số lọc từ request
+    category_id = request.GET.get('category')
+    product_type_id = request.GET.get('product_type')
+    color = request.GET.get('color')
+    size = request.GET.get('size')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    
+    # Debug: In ra các tham số filter
+    print(f"Filtering with: category={category_id}, product_type={product_type_id}")
+    
+    # Lọc theo danh mục - Chỉ lọc khi category_id không phải là None hoặc chuỗi rỗng
+    if category_id and category_id.strip():
+        try:
+            products = products.filter(type__category_id=int(category_id))
+            print(f"Filtered products count after category filter: {products.count()}")
+        except (ValueError, TypeError):
+            # Nếu category_id không hợp lệ, giữ nguyên danh sách sản phẩm
+            print("Invalid category ID")
+    
+    # Lọc theo loại sản phẩm
+    if product_type_id and product_type_id.strip():
+        products = products.filter(type_id=int(product_type_id))
+    
+    # Lọc theo màu
+    if color and color.strip():
+        products = products.filter(variants__color=color).distinct()
+    
+    # Lọc theo size
+    if size and size.strip():
+        products = products.filter(variants__size=size).distinct()
+    
+    # Lọc theo khoảng giá
+    if min_price and max_price:
+        products = products.filter(
+            variants__price__range=(float(min_price), float(max_price))
+        ).distinct()
+    
+    # Khởi tạo product_list để chứa thông tin sản phẩm
+    product_list = []
+    
+    # Duyệt từng sản phẩm để thêm thông tin chi tiết
+    for product in products:
+        # Lấy variant đầu tiên của sản phẩm
+        first_variant = product.variants.first()
+        
+        # Lấy hình ảnh của variant
+        first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
+        
+        # Tính toán giảm giá
+        discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
+        giagoc = product.base_price
+        giagiam = giagoc - (giagoc * discount_percent/100)
+        
+        product_data = {
+            'product': product,
+            'variant_image': first_variant_image,
+            'discount_percent': discount_percent,
+            'giagoc': format_currency(giagoc),
+            'giagiam': format_currency(giagiam)
+        }
+        product_list.append(product_data)
+    
+    # Lấy danh sách các category và producttype để hiển thị sidebar
+    categories = Category.objects.all()
+    product_types = Producttype.objects.all()
+    
+    # Debug: In ra số lượng sản phẩm cuối cùng
+    print(f"Final product list count: {len(product_list)}")
+    
+    try:
+        ao_category = Category.objects.get(name='Áo')
+        ao_category_id = ao_category.id
+    except Category.DoesNotExist:
+        ao_category_id = None
+
+    try:
+        quan_category = Category.objects.get(name='Quần')
+        quan_category_id = quan_category.id
+    except Category.DoesNotExist:
+        quan_category_id = None
+
+    try:
+        vay_category = Category.objects.get(name='Váy')
+        vay_category_id = vay_category.id
+    except Category.DoesNotExist:
+        vay_category_id = None
+
+    context = {
+        'products': products,
+        'categories': categories,
+        'product_types': product_types,
+        'colors': colors,
+        'sizes': sizes,
+        'product_list': product_list,
+        'ao_category_id': ao_category_id,
+        'quan_category_id': quan_category_id,
+        'vay_category_id': vay_category_id,
+    }
+
+    return render(request, 'home/danh_sach_san_pham.html', context)

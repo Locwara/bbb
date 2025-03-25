@@ -27,13 +27,19 @@
                 </div>
                 <div class="chuanuthd">
                     <div class="nut">
-                        <p>ÁO</p>
+                        <a href="{% url 'danh_sach_san_pham' %}?category={{ ao_category_id }}" class="text-decoration-none text-dark">
+                            <p>ÁO</p>
+                        </a>
                     </div>
                     <div class="nut">
-                        <p>QUẦN</p>
+                        <a href="{% url 'danh_sach_san_pham' %}?category={{ quan_category_id }}" class="text-decoration-none text-dark">
+                            <p>QUẦN</p>
+                        </a>
                     </div>
                     <div class="nut">
-                        <p>VÁY</p>
+                        <a href="{% url 'danh_sach_san_pham' %}?category={{ vay_category_id }}" class="text-decoration-none text-dark">
+                            <p>VÁY</p>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -52,6 +58,111 @@
             </div>
         </div>
     </div>
+    <!-- Thêm vào file templates/base.html hoặc template chính của bạn -->
+{% if messages %}
+<div class="django-messages">
+  {% for message in messages %}
+  <div class="django-message {{ message.tags }}" data-timeout="5000">
+    <span class="message-text">{{ message }}</span>
+    <span class="close-message">&times;</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<style>
+/* CSS cho thông báo */
+.django-messages {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 350px;
+}
+
+.django-message {
+
+  position: relative;
+  top: 80px;
+  padding: 15px 40px 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideIn 0.3s forwards, fadeOut 0.5s forwards 4.5s;
+}
+
+.django-message.success {
+  background-color: #28a745;
+}
+
+.django-message.error {
+  background-color: #dc3545;
+}
+
+.django-message.warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.django-message.info {
+  background-color: #17a2b8;
+}
+
+.close-message {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.close-message:hover {
+  opacity: 1;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Xử lý đóng thông báo khi click dấu X
+  document.querySelectorAll('.close-message').forEach(function(closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      const message = this.closest('.django-message');
+      message.style.animation = 'fadeOut 0.5s forwards';
+      setTimeout(() => message.remove(), 500);
+    });
+  });
+
+  // Tự động đóng thông báo sau timeout
+  document.querySelectorAll('.django-message').forEach(function(message) {
+    const timeout = message.dataset.timeout || 5000;
+    
+    setTimeout(() => {
+      message.style.animation = 'fadeOut 0.5s forwards';
+      setTimeout(() => message.remove(), 500);
+    }, parseInt(timeout));
+  });
+});
+</script>
     {% block content %}
     <div id="main">
 
@@ -121,7 +232,9 @@
                     </div>
 
                     <div class="noidung">
-                        <p>ÁO</p>
+                        <a href="{% url 'danh_sach_san_pham' %}?category={{ ao_category_id }}" class="text-decoration-none text-dark">
+                            <p>ÁO</p>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -132,7 +245,9 @@
                     </div>
 
                     <div class="noidung">
-                        <p>QUẦN</p>
+                        <a href="{% url 'danh_sach_san_pham' %}?category={{ quan_category_id }}" class="text-decoration-none text-dark">
+                            <p>QUẦN</p>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -143,7 +258,9 @@
                     </div>
 
                     <div class="noidung">
-                        <p>VÁY</p>
+                        <a href="{% url 'danh_sach_san_pham' %}?category={{ vay_category_id }}" class="text-decoration-none text-dark">
+                            <p>VÁY</p>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -471,50 +588,49 @@
         <div class="spinner"></div>
     </div>
     <script>
-        // JavaScript cho hiệu ứng chuyển trang
-
         document.addEventListener('DOMContentLoaded', function () {
             const loadingOverlay = document.getElementById('loading-overlay');
-
+            let isLoading = false; // Biến cờ để theo dõi trạng thái loading
+    
             // Hiển thị loading khi trang bắt đầu tải
             showLoading();
-
+    
             // Ẩn loading khi trang đã tải xong
             window.addEventListener('load', function () {
                 hideLoading();
             });
-
+    
             // Hiển thị loading khi click vào các link chuyển trang
             setupLinkListeners();
-
-            // Hiệu ứng loading khi sử dụng nút Back/Forward của trình duyệt
+    
+            // Xử lý hiệu ứng loading khi sử dụng nút Back/Forward của trình duyệt
             window.addEventListener('popstate', function () {
                 showLoading();
+                
+                // Thêm timeout để đảm bảo loading dừng nếu trang load từ cache
+                setTimeout(function() {
+                    if (isLoading) {
+                        hideLoading();
+                    }
+                }, 2000); // 2 giây là thời gian tối đa chờ đợi
             });
-
+    
             // Hàm thiết lập sự kiện cho các link
             function setupLinkListeners() {
-                // Lấy tất cả các link trên trang (trừ các link có thuộc tính no-loading)
                 const links = document.querySelectorAll('a:not([data-no-loading])');
-
+    
                 links.forEach(link => {
-                    // Kiểm tra nếu link dẫn đến trang khác (không phải # hoặc javascript:)
                     if (link.getAttribute('href') &&
                         !link.getAttribute('href').startsWith('#') &&
                         !link.getAttribute('href').startsWith('javascript:') &&
                         !link.getAttribute('target')) {
-
+    
                         link.addEventListener('click', function (e) {
-                            // Lấy URL đích
                             const targetUrl = link.getAttribute('href');
-
-                            // Nếu URL không phải là external link (link ra bên ngoài website)
                             if (targetUrl.indexOf(window.location.hostname) > -1 ||
                                 targetUrl.startsWith('/')) {
                                 e.preventDefault();
                                 showLoading();
-
-                                // Chuyển hướng sau một khoảng thời gian ngắn để hiệu ứng được hiển thị
                                 setTimeout(function () {
                                     window.location.href = targetUrl;
                                 }, 300);
@@ -522,57 +638,51 @@
                         });
                     }
                 });
-
-                // Xử lý riêng cho các nút danh mục
+    
                 const categoryButtons = document.querySelectorAll('.nut, .danhmuc');
                 categoryButtons.forEach(button => {
                     button.addEventListener('click', function () {
                         showLoading();
-                        // Trong thực tế, cần thêm mã để chuyển đến URL tương ứng
                     });
                 });
             }
-
+    
             // Hàm hiển thị loading
             function showLoading() {
+                isLoading = true;
                 document.body.classList.add('loading-active');
                 loadingOverlay.classList.add('active');
-
-                // Thêm class loading vào các phần nội dung chính
+    
                 const mainContent = document.getElementById('main');
                 if (mainContent) {
                     mainContent.classList.add('loading');
                 }
-
-                const productLists = document.querySelectorAll('.danhsachspnnm');
-                productLists.forEach(list => {
-                    list.classList.add('loading');
-                });
-                const headerss = document.querySelectorAll('.chuaheader');
+    
+                const productLists = document.querySelectorAll('.danhsachspnnm, .chuaheader');
                 productLists.forEach(list => {
                     list.classList.add('loading');
                 });
             }
-
+    
             // Hàm ẩn loading
             function hideLoading() {
+                isLoading = false;
                 setTimeout(function () {
                     loadingOverlay.classList.remove('active');
                     document.body.classList.remove('loading-active');
-
-                    // Xóa class loading khỏi các phần nội dung
+    
                     const mainContent = document.getElementById('main');
                     if (mainContent) {
                         mainContent.classList.remove('loading');
                     }
-
-                    const productLists = document.querySelectorAll('.danhsachspnnm');
+    
+                    const productLists = document.querySelectorAll('.danhsachspnnm, .chuaheader');
                     productLists.forEach(list => {
                         list.classList.remove('loading');
                     });
-                }, 500); // Đợi 500ms để tạo hiệu ứng mượt mà
+                }, 500);
             }
-
+    
             // Bắt sự kiện khi submit form tìm kiếm
             const searchForm = document.querySelector('form[name="search"]');
             if (searchForm) {
@@ -580,17 +690,24 @@
                     showLoading();
                 });
             }
-
+    
             // Xử lý cho input tìm kiếm
             const searchInput = document.querySelector('.searchhd');
             if (searchInput) {
                 searchInput.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter') {
                         showLoading();
-                        // Trong thực tế, cần thêm mã để xử lý tìm kiếm
                     }
                 });
             }
+    
+            // Thêm sự kiện pageshow để xử lý khi trang được load từ cache
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    // Trang được load từ cache (như khi bấm back/forward)
+                    hideLoading();
+                }
+            });
         });
     </script>
 

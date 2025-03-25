@@ -16,7 +16,7 @@
                 <div class="col-md-8">
                     <h4 class="mb-3">Tên sản phẩm: {{ order_item.product_variant.product.name }}</h4>
                     <p class="text-muted mb-4">
-                        Chi tiết: {{ order_item.product_variant.color }} - {{ order_item.product_variant.size }}
+                      Màu: {{ order_item.product_variant.color }} - Size: {{ order_item.product_variant.size }}
                     </p>
                     
                     <form method="post">
@@ -78,6 +78,10 @@
         max-height: 300px;
         object-fit: cover;
         border-radius: 8px;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
     }
 </style>
 {% endblock %}

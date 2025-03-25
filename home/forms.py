@@ -1,5 +1,5 @@
 # import UserClient từ model
-from .models import UserClient, UserRating
+from .models import UserClient, UserRating, Feedback
 # import thư viện forms từ django
 from django import  forms
 from django.core.exceptions import ValidationError
@@ -63,10 +63,34 @@ class UserRatingForm(forms.ModelForm):
         required=True
     )
     comment = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Nhập đánh giá của bạn (tùy chọn)'}), 
+        widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Nhập đánh giá của bạn (tùy chọn)', 'class': 'form-control'}), 
         required=False
     )
 
     class Meta:
         model = UserRating
         fields = ['rating', 'comment']
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 4, 
+                'placeholder': 'Nhập phản hồi của bạn...'
+            })
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        self.order = kwargs.pop('order', None)
+        super().__init__(*args, **kwargs)
+    
+    def save(self, commit=True):
+        feedback = super().save(commit=False)
+        feedback.user = self.user
+        feedback.order = self.order
+        if commit:
+            feedback.save()
+        return feedback

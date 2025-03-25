@@ -33,5 +33,8 @@ urlpatterns = [
     path('order/<int:order_id>/cancel/', home.cancel_order, name='cancel_order'),
     path('paypal/', home.process_paypal, name='process_paypal'),
     path('rate-order-item/<int:order_item_id>/', home.rate_order_item, name='rate_order_item'),
+    path('feedback/create/<int:order_id>/', home.create_feedback, name='create_feedback'),
+    path('danh-sach-san-pham/', home.danh_sach_san_pham, name='danh_sach_san_pham'),
+    
 
 ]

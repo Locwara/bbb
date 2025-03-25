@@ -22,6 +22,7 @@ class AuthenticationMiddleware:
             '/social-auth/complete/facebook/',
             '/social-auth/login/facebook/',
             reverse('index'),
+            reverse('danh_sach_san_pham'),
 
             # 🟢 Thêm PayPal IPN và webhook vào danh sách công khai
             reverse('paypal-ipn'), 

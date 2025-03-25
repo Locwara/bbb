@@ -204,6 +204,7 @@ class Voucher(models.Model):
         db_table = 'voucher'
         
 class UserRating(models.Model):
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='ratings')
     user = models.ForeignKey(UserClient, on_delete=models.CASCADE, related_name='ratings')
     product_variant = models.ForeignKey('ProductVariant', on_delete=models.CASCADE, related_name='ratings')
     rating = models.IntegerField()
@@ -217,3 +218,14 @@ class UserRating(models.Model):
         
     def __str__(self):
         return f"{self.user.username} - {self.product_variant.name} ({self.rating}/5)"
+class Feedback(models.Model):
+    user = models.ForeignKey('UserClient', on_delete=models.CASCADE)
+    order = models.OneToOneField('Order', on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = 'feedback'
+
+    def __str__(self):
+        return f"Feedback for Order {self.order_id}"

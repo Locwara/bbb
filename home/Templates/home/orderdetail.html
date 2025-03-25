@@ -1,9 +1,10 @@
 {% extends 'home/home.html' %}
 
 {% block title %}Chi tiết đơn hàng #{{ order.id }}{% endblock %}
-
+{% load custom_filters %}
 {% block content %}
 <div class="container my-4">
+    
     <div class="row">
         <div class="col-12">
             <div class="d-flex align-items-center mb-4">
@@ -188,6 +189,7 @@
                     <thead style="background-color: #e8f5e9;">
                         <tr>
                             <th>Sản phẩm</th>
+
                             <th>Giá</th>
                             <th>Số lượng</th>
                             <th class="text-end">Thành tiền</th>
@@ -196,7 +198,7 @@
                     <tbody>
                         {% for item in order_items %}
                         <tr>
-                            <td>
+                            <td class = "dg">
                                 <div class="d-flex align-items-center">
                                     {% if item.product_variant.image %}
                                     <img src="{{ item.product_variant.image.url }}" alt="{{ item.product_variant.product.name }}" class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
@@ -207,16 +209,28 @@
                                             Size: {{ item.product_variant.size }}, 
                                             Màu: {{ item.product_variant.color }}
                                         </small>
+                                        
+                                    </div>
                                     </div>
                                 </div>
+                                {% if order.status == 'done' %}
+                                        {% with rated=item|check_existing_rating:request.user %}
+                                            {% if not rated %}
+                                                <button class="btndg" onclick="window.location.href='{% url 'rate_order_item' item.id %}'">Đánh giá</button>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif %}
                             </td>
                             <td>{{ item.unit_price|floatformat:0 }}₫</td>
                             <td>{{ item.quantity }}</td>
                             <td class="text-end">{{ item.total_price|floatformat:0 }}₫</td>
+                            
                         </tr>
                         {% endfor %}
                     </tbody>
+                    
                     <tfoot style="background-color: #e8f5e9;">
+                        
                         <tr>
                             <td colspan="3" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
                             <td class="text-end">{{ order.total_amount|add:order.discount_amount|floatformat:0 }}₫</td>
@@ -261,5 +275,26 @@
         </div>
     </div>
 </div>
+
 {% endif %}
+<style>
+    .btndg{
+        background-color: #000;
+        color: #fff;
+        padding: 10px;
+        border-radius: 12px;
+        margin-right: 20px;
+    }
+    .btndg:hover{
+        background-color: #000;
+        color: #fff;
+        transform: scale(1.05);
+        transition: 0.3s;
+    }
+    .dg{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'home/home.html' %}
 
 {% block title %}Danh sách đơn hàng{% endblock %}
-
+{% load custom_filters %}
 {% block content %}
 {% if messages %}
     <div class="messages">
@@ -75,16 +75,14 @@
                     <p><strong>Địa chỉ:</strong> {{ order.address.street }}, {{ order.address.ward }}, {{ order.address.district }}, {{ order.address.city }}</p>
                     {% endif %}
                     {% if order.status == 'done' %}
-                    <div class="card-footer">
-                        {% for item in order.items.all %}
-                            {% if not item.userrating_set.exists %}
-                                <a href="{% url 'rate_order_item' item.id %}" class="btn btn-success btn-sm">
-                                    Đánh giá sản phẩm {{ item.product_variant.product.name }}
-                                </a>
+                        {% with feedback_exists=order|check_existing_feedback:request.user %}
+                            {% if not feedback_exists %}
+                            <button class="btndg" onclick="window.location.href='{% url 'create_feedback' order.id %}'">Phản hồi với Beee</button>            
+                            {% else %}
+                            Bạn đã phản hồi rồi!
                             {% endif %}
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                        {% endwith %}
+                    {% endif %}
                 </div>
                 <div class="card-footer" style="background-color: #f1f8e9;">
                     <a href="{% url 'order_detail' order.id %}" class="btn btn-success btn-sm w-100">Xem chi tiết</a>
@@ -100,4 +98,24 @@
     </div>
     {% endif %}
 </div>
+<style>
+    .btndg{
+        background-color: #198754;
+        color: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        margin-right: 20px;
+    }
+    .btndg:hover{
+        background-color: #198754;
+        color: #fff;
+        transform: scale(1.05);
+        transition: 0.3s;
+    }
+    .dg{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
 {% endblock %}

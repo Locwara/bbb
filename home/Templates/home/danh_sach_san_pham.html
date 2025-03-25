@@ -1,0 +1,175 @@
+{% extends 'home/home.html' %}
+
+{% load custom_filters %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Sidebar Lọc -->
+        <div class="col-md-3">
+            <form method="get">
+                <!-- Lọc Danh Mục -->
+                <div class="filter-section">
+                    <h4>Danh Mục</h4>
+                    {% for category in categories %}
+                        <div class="category-item">
+                            <input type="checkbox" name="category" value="{{ category.id }}" 
+                                   id="category_{{ category.id }}">
+                            <label for="category_{{ category.id }}">
+                                {{ category.name }}
+                            </label>
+                            
+                            <!-- Hiển thị các loại sản phẩm của danh mục -->
+                            <div class="product-types">
+                                {% for type in product_types %}
+                                    {% if type.category_id_id == category.id %}
+                                        <div class="product-type-item">
+                                            <input type="checkbox" 
+                                                   name="product_type" 
+                                                   value="{{ type.id }}" 
+                                                   id="type_{{ type.id }}"
+                                                   class="type-checkbox">
+                                            <label for="type_{{ type.id }}">
+                                                {{ type.name }}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Lọc Màu Sắc -->
+                <div class="filter-section">
+                    <h4>Màu Sắc</h4>
+                    <div class="color-filters">
+                        {% for color in colors %}
+                            <div class="color-filter-item">
+                                <input type="checkbox" 
+                                       name="color" 
+                                       value="{{ color }}" 
+                                       id="color_{{ color }}"
+                                       class="color-checkbox">
+                                <label for="color_{{ color }}" 
+                                       class="color-label" 
+                                       style="background-color: {{ color }};">
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Lọc Size -->
+                <div class="filter-section">
+                    <h4>Kích Thước</h4>
+                    <div class="size-filters">
+                        {% for size in sizes %}
+                            <div class="size-item">
+                                <input type="checkbox" 
+                                       name="size" 
+                                       value="{{ size }}" 
+                                       id="size_{{ size }}">
+                                <label for="size_{{ size }}">
+                                    {{ size }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Lọc Giá -->
+                <div class="filter-section">
+                    <h4>Khoảng Giá</h4>
+                    <div class="price-filter">
+                        <input type="number" 
+                               name="min_price" 
+                               placeholder="Giá từ">
+                        <input type="number" 
+                               name="max_price" 
+                               placeholder="Đến giá">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Áp Dụng Bộ Lọc</button>
+            </form>
+        </div>
+
+        <!-- Danh Sách Sản Phẩm -->
+        <div class="col-md-9">
+            <div class="danhsachspnnm">
+                <h4 class="dmsp">CÁC SẢN PHẨM CỦA BEEE</h4>
+                <div class="row chuasp">
+                    {% for item in product_list %}
+                    <div class="col-md-3 mb-4">
+                        <div class="sp">
+                            <a href="{% url 'product_detail' product_id=item.product.id %}"
+                                style="text-decoration: none; color: inherit;">
+                                <div class="lot">
+                                    <div class="chuaanh">
+                                        <img src="{{ item.variant_image }}" alt="{{ item.product.name }}" class="img-fluid">
+                                    </div>
+                                    <div class="chuadl">
+                                        <p class="tensp">{{ item.product.name }}</p>
+                                        <div class="chuagia">
+                                            <div class="giagiam">{{ item.giagiam }}</div>
+                                            <div class="giagoc">{{ item.giagoc }}</div>
+                                            <div class="ptg">
+                                                <p>-{{ item.discount_percent|floatformat:0 }}%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles for color filter */
+    .color-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .color-filter-item {
+        position: relative;
+    }
+    
+    .color-checkbox {
+        display: none;
+    }
+    
+    .color-label {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .color-checkbox:checked + .color-label {
+        border-color: black;
+        box-shadow: 0 0 0 2px white, 0 0 0 4px black;
+    }
+</style>
+
+<script>
+    // Optional: Add JavaScript to handle color filter selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const colorCheckboxes = document.querySelectorAll('.color-checkbox');
+        
+        colorCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Optional: Add any additional logic for color selection
+            });
+        });
+    });
+</script>
+{% endblock %}
