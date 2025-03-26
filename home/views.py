@@ -90,37 +90,59 @@ def login_view(request):
 # hàm sẽ trả về giá trị int và định dạng theo đơn vị ngàn, chục ngàn, trăm ngàn,... + đ
 def format_currency(value):
     return f"{int(value):,}".replace(",", ".") + " đ"
+from django.db.models import Sum
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum, Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import F
+import random
+
+from .models import (
+    Product, Category, Producttype, 
+    Productvariant, Order, OrderItem
+)
+
+# Utility function for currency formatting
+def format_currency(amount):
+    return "{:,.0f}".format(amount).replace(",", ".")
 
 def home(request):
-    # cho biến products lấy hết tất cả các variant liên quan bằng prefetch_related
-    #prefetch_ralated dùng cho quan hệ one to many trong trường hợp này
-    # cho biến products đại diện cho tất cả sản phẩm và được trỏ khóa ngoại tới hai table là productvariant và discount_percentage 
-    # thông qua prefetch_related(trường hợp ở đây là dùng quan hệ one-to-many), select_related(trường hợp ở đây là dùng cho quan hệ many-to-one)
+    # Lấy tất cả sản phẩm với thông tin liên quan
     products = Product.objects.prefetch_related('variants').select_related('id_discount_percentage').all()
     
-    
-    
-    # Thêm thông tin hìn    h ảnh vào từng sản phẩm
-    # tạo các danh sách rỗng để chứa các sản phẩm tùy điều kiện lọc
+    # Lấy top 5 sản phẩm bán chạy nhất
+    top_products = (
+        Product.objects
+        .filter(variants__orderitem__order__status='done')
+        .annotate(
+            total_sold_quantity=Sum('variants__orderitem__quantity', 
+                                    filter=Q(variants__orderitem__order__status='done'))
+        )
+        .order_by('-total_sold_quantity')
+        .prefetch_related('variants')
+        .select_related('id_discount_percentage')
+        [:5]  # Giới hạn top 5 sản phẩm
+    )
+
+    # Danh sách để chứa các sản phẩm
+    product_list = []
     product_ao = []
     product_quan = []
     product_vay = []
-    product_list = []
-   
-    
-    #duyệt từng phần tử của products
+    top_products_list = []
+
+    # Xử lý sản phẩm
     for product in products:
         # Lấy hình ảnh của biến thể đầu tiên (nếu có)
-        # ở mỗi sp được lặp sẽ lấy variant đầu tiên của sp đó
         first_variant = product.variants.first()
-        # sau đó lấy hình ảnh của variant đó nếu nó tồn tại và nó có hình ảnh
         first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
-        # cho biến discount_percent để lấy được phần trăm giảm giá của mỗi product đc lặp qua nếu nó tồn tại
+        
+        # Tính toán giảm giá
         discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
-        #tính giá giảm nè
         giagoc = product.base_price
         giagiam = giagoc - (giagoc * discount_percent/100)
-        # một dic để lưu biến tham chiếu qua html là các sản phẩm và hình 
+        
+        # Tạo dictionary sản phẩm
         product_data = {
             'product': product,
             'variant_image': first_variant_image,
@@ -128,50 +150,154 @@ def home(request):
             'giagoc': format_currency(giagoc),
             'giagiam': format_currency(giagiam)
         }
-        # add tất cả các sản sản phẩm đã xử lý ở trên vào product_list
+        
+        # Thêm vào danh sách chung
         product_list.append(product_data)
-        # nếu mà loại của sản phẩm đã xử lý thuộc cate là Áo thì thêm vào product_ao
+        
+        # Phân loại sản phẩm theo danh mục
         if product.type.category_id.name in ["Áo", "Ao"]:
             product_ao.append(product_data)
-        # nếu mà loại của sản phẩm đã xử lý thuộc cate là Quần thì thêm vào product_quan
         if product.type.category_id.name in ["Quần", "Quan"]:
             product_quan.append(product_data)
-        # nếu mà loại của sản phẩm đã xử lý thuộc cate là Váy thì thêm vào product_vay
         if product.type.category_id.name in ["Váy", "Vay"]:
             product_vay.append(product_data)
-    # một danh sách rỗng để chứa các sản phẩm random
-    product_random = []
-    # nếu product_list có sản phẩm
-    if product_list:
-        # đặt biến num_random lấy ít nhất 5 sản phẩm với phạm vi là cả product_list
-        num_random = min(5, len(product_list))
-        # đặt biến random_product dể tiến hành random, sample giúp danh sách gốc không bị sáo trộn và không trùng lặp sp random
-        random_product = random.sample(product_list, num_random)
-        # cuối cùng là cho danh sách rỗng lúc nãy = với danh sách vừa random
-        product_random = random_product
-    # đây cũng là random nhưng mình muốn lấy một list random với thứ tự khác nên mới làm tự hiểu hé
-    product_random1 = []
-    if product_list: 
-        num_random = min(5, len(product_list))
-        random_product = random.sample(product_list, num_random)
-        product_random1 = random_product
-    ao_category = Category.objects.get(name='Áo')  # Điều chỉnh tên phù hợp
+
+    # Xử lý sản phẩm bán chạy
+    for product in top_products:
+        first_variant = product.variants.first()
+        first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
+        
+        discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
+        giagoc = product.base_price
+        giagiam = giagoc - (giagoc * discount_percent/100)
+        
+        top_product_data = {
+            'product': product,
+            'variant_image': first_variant_image,
+            'discount_percent': discount_percent,
+            'giagoc': format_currency(giagoc),
+            'giagiam': format_currency(giagiam),
+            'total_sold_quantity': product.total_sold_quantity
+        }
+        
+        top_products_list.append(top_product_data)
+
+    # Sản phẩm ngẫu nhiên
+    product_random = random.sample(product_list, min(5, len(product_list))) if product_list else []
+    product_random1 = random.sample(product_list, min(5, len(product_list))) if product_list else []
+
+    # Lấy ID các danh mục
+    ao_category = Category.objects.get(name='Áo')
     quan_category = Category.objects.get(name='Quần')
     vay_category = Category.objects.get(name='Váy')
-    # tạo một danh sách lưu biến và tham chiếu cho gọn tí 
-    context = {'products': product_list,
-               'product_ao': product_ao, 
-               'product_quan': product_quan,
-               'product_vay': product_vay, 
-               'product_random': product_random, 
-               'product_random1': product_random1,
-               'ao_category_id': ao_category.id,
-               'quan_category_id': quan_category.id,
-               'vay_category_id': vay_category.id,
-               }
-    #render qua trang chủ truyền thk danh sách nãy dô
+    
+    # Truyền context
+    context = {
+        'products': product_list,
+        'product_ao': product_ao, 
+        'product_quan': product_quan,
+        'product_vay': product_vay, 
+        'product_random': product_random, 
+        'product_random1': product_random1,
+        'top_products': top_products_list,
+        'ao_category_id': ao_category.id,
+        'quan_category_id': quan_category.id,
+        'vay_category_id': vay_category.id,
+    }
+    
     return render(request, 'home/home.html', context)
-# cho một đối tượng kế thừ từ thư viện DjangoJSONEncoder 
+
+def product_detail(request, product_id):
+    # Lấy sản phẩm chi tiết
+    product = get_object_or_404(Product.objects.prefetch_related('variants'), pk=product_id)
+    
+    # Lấy các biến thể của sản phẩm
+    variants = product.variants.all()
+    
+    # Tính toán giảm giá
+    discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
+    giagoc = product.base_price
+    giagiam = giagoc - (giagoc * discount_percent/100)
+    
+    # Lấy các sản phẩm liên quan (cùng loại)
+    related_products = Product.objects.filter(
+        type=product.type
+    ).exclude(pk=product_id)[:4]
+    
+    # Xử lý sản phẩm liên quan
+    related_products_list = []
+    for related_product in related_products:
+        first_variant = related_product.variants.first()
+        first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
+        
+        related_discount_percent = related_product.id_discount_percentage.percent if related_product.id_discount_percentage else 0
+        related_giagoc = related_product.base_price
+        related_giagiam = related_giagoc - (related_giagoc * related_discount_percent/100)
+        
+        related_products_list.append({
+            'product': related_product,
+            'variant_image': first_variant_image,
+            'discount_percent': related_discount_percent,
+            'giagoc': format_currency(related_giagoc),
+            'giagiam': format_currency(related_giagiam)
+        })
+    
+    context = {
+        'product': product,
+        'variants': variants,
+        'giagoc': format_currency(giagoc),
+        'giagiam': format_currency(giagiam),
+        'discount_percent': discount_percent,
+        'related_products': related_products_list
+    }
+    
+    return render(request, 'product/product_detail.html', context)
+
+def category_products(request, category_id):
+    # Lấy danh mục
+    category = get_object_or_404(Category, pk=category_id)
+    
+    # Lấy tất cả sản phẩm thuộc danh mục
+    products = Product.objects.filter(
+        type__category_id=category
+    ).prefetch_related('variants').select_related('id_discount_percentage')
+    
+    # Phân trang
+    paginator = Paginator(products, 12)  # 12 sản phẩm trên mỗi trang
+    page = request.GET.get('page')
+    
+    try:
+        products_page = paginator.page(page)
+    except PageNotAnInteger:
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
+    
+    # Xử lý sản phẩm
+    product_list = []
+    for product in products_page:
+        first_variant = product.variants.first()
+        first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
+        
+        discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
+        giagoc = product.base_price
+        giagiam = giagoc - (giagoc * discount_percent/100)
+        
+        product_list.append({
+            'product': product,
+            'variant_image': first_variant_image,
+            'discount_percent': discount_percent,
+            'giagoc': format_currency(giagoc),
+            'giagiam': format_currency(giagiam)
+        })
+    
+    context = {
+        'category': category,
+        'products': product_list,
+        'page_obj': products_page
+    }
+    
+    return render(request, 'product/category_products.html', context)# cho một đối tượng kế thừ từ thư viện DjangoJSONEncoder 
 class DecimalEncoder(DjangoJSONEncoder):
     # đặt một hàm tên là default
     def default(self, obj):
@@ -1591,3 +1717,93 @@ def danh_sach_san_pham(request):
     }
 
     return render(request, 'home/danh_sach_san_pham.html', context)
+# Trong hàm buy_now, bạn có thể thêm logic để:
+def buy_now(request, variant_id):
+    # Kiểm tra đăng nhập
+    if not request.user.is_authenticated:
+        messages.error(request, 'Vui lòng đăng nhập để thanh toán')
+        return redirect('login')
+
+    try:
+        # Lấy variant được chọn
+        variant = Productvariant.objects.get(id=variant_id)
+
+        # Kiểm tra tồn kho
+        if variant.stock < 1:
+            messages.error(request, 'Sản phẩm đã hết hàng')
+            return redirect('product_detail', product_id=variant.product.id)
+
+        # Lấy user hiện tại
+        user = UserClient.objects.get(username=request.user.username)
+
+        # Tạo hoặc lấy giỏ hàng
+        cart, created = Cart.objects.get_or_create(user_id=user)
+
+        # Xóa các item cũ trong giỏ hàng (nếu muốn mua ngay chỉ có 1 sản phẩm)
+        cart.items.all().delete()
+
+        # Tạo cart item mới
+        cart_item = CartItem.objects.create(
+            cart_id=cart,
+            product_variant_id=variant,
+            quantity=1  # Mặc định là 1 sản phẩm
+        )
+
+        # Lưu ID của cart item vào session để chuyển thẳng đến checkout
+        request.session['selected_items'] = [cart_item.id]
+
+        # Chuyển hướng đến trang checkout
+        return redirect('checkout')
+
+    except Productvariant.DoesNotExist:
+        messages.error(request, 'Không tìm thấy sản phẩm')
+        return redirect('home')
+    except Exception as e:
+        messages.error(request, f'Có lỗi xảy ra: {str(e)}')
+        return redirect('home')
+    
+def search_products(request):
+    # Lấy từ khóa tìm kiếm từ request
+    search_query = request.GET.get('search', '').strip()
+    
+    # Nếu không có từ khóa tìm kiếm, trả về list rỗng
+    if not search_query:
+        return render(request, 'search/search_results.html', {
+            'product_list': [],
+            'search_query': search_query,
+            'message': 'Vui lòng nhập từ khóa tìm kiếm'
+        })
+    
+    # Tìm kiếm sản phẩm
+    products = Product.objects.prefetch_related('variants').select_related('id_discount_percentage').filter(name__icontains=search_query)
+    
+    # Xử lý danh sách sản phẩm
+    product_list = []
+    
+    for product in products:
+        # Lấy hình ảnh của biến thể đầu tiên (nếu có)
+        first_variant = product.variants.first()
+        first_variant_image = first_variant.image.url if first_variant and first_variant.image else None
+        
+        # Tính toán giảm giá
+        discount_percent = product.id_discount_percentage.percent if product.id_discount_percentage else 0
+        giagoc = product.base_price
+        giagiam = giagoc - (giagoc * discount_percent/100)
+        
+        # Tạo dictionary sản phẩm
+        product_data = {
+            'product': product,
+            'variant_image': first_variant_image,
+            'discount_percent': discount_percent,
+            'giagoc': format_currency(giagoc),
+            'giagiam': format_currency(giagiam)
+        }
+        
+        product_list.append(product_data)
+    
+    # Render template kết quả tìm kiếm
+    return render(request, 'home/search_results.html', {
+        'product_list': product_list,
+        'search_query': search_query,
+        'message': f'Tìm thấy {len(product_list)} sản phẩm' if product_list else 'Không tìm thấy sản phẩm nào'
+    })

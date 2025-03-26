@@ -1,0 +1,57 @@
+{% extends 'home/home.html' %}
+
+{% block content %}
+<div class="container search-results">
+    <h4>Kết quả tìm kiếm</h4>
+    
+    <div class="search-info">
+        <p>{{ message }}</p>
+        {% if search_query %}
+            <p>Từ khóa: "{{ search_query }}"</p>
+        {% endif %}
+    </div>
+    <div class="danhsachspnnm">
+        <div class="chuasp">
+            {% for item in product_list %}
+            <div class="sp">
+                <a href="{% url 'product_detail' product_id=item.product.id %}"
+                    style="text-decoration: none; color: inherit;">
+                    <div class="lot">
+                        <div class="chuaanh">
+                            <img src="{{ item.variant_image }}" alt="{{ item.product.name }}">
+                        </div>
+                        <div class="chuadl">
+                            <p class="tensp">{{ item.product.name }}</p>
+                            <div class="chuagia">
+                                <div class="giagiam">{{ item.giagiam }}</div>
+                                <div class="giagoc">{{ item.giagoc }}</div>
+                                <div class="ptg">
+                                    <p>-{{ item.discount_percent|floatformat:0 }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<style>
+.search-results>h4{
+    text-align: center;
+    margin-top: 30px;
+}
+.search-info{
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #19af32;
+    background-color: rgba(126, 252, 0, 0.021);
+    width: 20%;
+}
+.search-info>p{
+    margin: 0;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

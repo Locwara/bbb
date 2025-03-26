@@ -292,14 +292,14 @@
         }
         
         // Tìm variant_id từ dữ liệu variant hiện tại
-        const variantId = currentVariant.id; // Đảm bảo biến currentVariant có chứa id
+        const variantId = currentVariant.id;
         
         // Gửi request đến server
         fetch(addToCartUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') // Hàm lấy CSRF token
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
                 variant_id: variantId,
@@ -309,16 +309,27 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message);
-                // Cập nhật số lượng sản phẩm trong giỏ hàng ở header (nếu có)
+                alert('Đã thêm sản phẩm vào giỏ hàng');
+                // Cập nhật số lượng sản phẩm trong giỏ hàng
                 updateCartCount(data.cart_count);
             } else {
-                alert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+                alert(data.message);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('Vui lòng đăng nhập trước khi thêm vào giỏ hàng');
-            window.location.href = loginUrl;
+            console.error('Lỗi:', error);
+            alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
         });
+    }
+    
+    function buyNow() {
+        if (!selectedColor || !selectedSize || !currentVariant) {
+            alert('Vui lòng chọn màu sắc và kích thước');
+            return;
+        }
+        
+        const variantId = currentVariant.id;
+        
+        // Chuyển hướng đến trang mua ngay với variant đã chọn
+        window.location.href = `/login-client/buy-now/${variantId}`;
     }

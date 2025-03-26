@@ -1,7 +1,9 @@
 {% extends 'home/home.html' %}
+{% load static %}
 
 {% load custom_filters %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'home/css/danh_sach_san_pham.css' %}">
 <div class="container">
     <div class="row">
         <!-- Sidebar Lọc -->
@@ -14,7 +16,7 @@
                         <div class="category-item">
                             <input type="checkbox" name="category" value="{{ category.id }}" 
                                    id="category_{{ category.id }}">
-                            <label for="category_{{ category.id }}">
+                            <label class="ctn" for="category_{{ category.id }}">
                                 {{ category.name }}
                             </label>
                             
@@ -28,7 +30,7 @@
                                                    value="{{ type.id }}" 
                                                    id="type_{{ type.id }}"
                                                    class="type-checkbox">
-                                            <label for="type_{{ type.id }}">
+                                            <label class="tn" for="type_{{ type.id }}">
                                                 {{ type.name }}
                                             </label>
                                         </div>
@@ -83,14 +85,16 @@
                     <div class="price-filter">
                         <input type="number" 
                                name="min_price" 
+                               class="min_price"
                                placeholder="Giá từ">
                         <input type="number" 
                                name="max_price" 
+                               class="max_price"
                                placeholder="Đến giá">
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Áp Dụng Bộ Lọc</button>
+                <button type="submit" class="btn-loc">Áp Dụng Bộ Lọc</button>
             </form>
         </div>
 

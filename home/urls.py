@@ -35,6 +35,7 @@ urlpatterns = [
     path('rate-order-item/<int:order_item_id>/', home.rate_order_item, name='rate_order_item'),
     path('feedback/create/<int:order_id>/', home.create_feedback, name='create_feedback'),
     path('danh-sach-san-pham/', home.danh_sach_san_pham, name='danh_sach_san_pham'),
-    
+    path('buy-now/<int:variant_id>/', home.buy_now, name='buy_now'),
+    path('search/', home.search_products, name='search_products'),
 
 ]

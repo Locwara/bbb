@@ -45,7 +45,10 @@
             </div>
             <div class="chuasearchicon">
                 <div class="chuasearch">
-                    <input class="searchhd" type="text" name="search" placeholder="Search" id="">
+                    <form class="ftk" action="{% url 'search_products' %}" method="GET">
+                        <input class="searchhd" type="text" name="search" placeholder="Tìm kiếm sản phẩm" required>
+                        <button class="tk" type="submit">Search</button>
+                    </form>
                 </div>
                 <div class="chuaicon">
                     <div class="icon">
@@ -79,7 +82,32 @@
   z-index: 1000;
   max-width: 350px;
 }
+.searchhd:hover{
+    border: 1px solid #666;
+}
+.tk{
+    height: 40px;
+    width: 150px;
+    padding: 10px;
+    background-color: rgba(56, 92, 20, 0.459);
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+}
+.tk:hover{
+    background-color: rgba(56, 92, 20, 0.8);
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+.ftk{  
+    display: flex;
+    gap: 10px;
+}
 
+.chuasearch{
+    width: 300px !important; 
+}
 .django-message {
 
   position: relative;
@@ -266,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
         <div class="danhsachspnnm">
-            <h4 class="dmsp">CÓ THỂ BẠN SẼ THÍCH</h4>
+            <h4 class="dmsp">NHỮNG SẢN PHẨM HÔM NAY</h4>
             <div class="chuasp">
                 {% for item in product_random|slice:":5" %}
                 <div class="sp">
@@ -295,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="danhsachspnnm">
             <h4 class="dmsp">NHỮNG SẢN PHẨM NHIỀU NGƯỜI MUA</h4>
             <div class="chuasp">
-                {% for item in product_random1|slice:":5" %}
+                {% for item in top_products|slice:":5" %}
                 <div class="sp">
                     <a href="{% url 'product_detail' product_id=item.product.id %}"
                         style="text-decoration: none; color: inherit;">
