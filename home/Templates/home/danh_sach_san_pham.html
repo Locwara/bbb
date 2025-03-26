@@ -14,7 +14,7 @@
                     <h4>Danh Mục</h4>
                     {% for category in categories %}
                         <div class="category-item">
-                            <input type="checkbox" name="category" value="{{ category.id }}" 
+                            <input type="checkbox" name="category" class="check-box" value="{{ category.id }}" 
                                    id="category_{{ category.id }}">
                             <label class="ctn" for="category_{{ category.id }}">
                                 {{ category.name }}
@@ -29,7 +29,7 @@
                                                    name="product_type" 
                                                    value="{{ type.id }}" 
                                                    id="type_{{ type.id }}"
-                                                   class="type-checkbox">
+                                                   class="check-box">
                                             <label class="tn" for="type_{{ type.id }}">
                                                 {{ type.name }}
                                             </label>
@@ -69,6 +69,7 @@
                             <div class="size-item">
                                 <input type="checkbox" 
                                        name="size" 
+                                       class="check-box"
                                        value="{{ size }}" 
                                        id="size_{{ size }}">
                                 <label for="size_{{ size }}">

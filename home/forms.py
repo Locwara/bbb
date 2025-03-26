@@ -16,9 +16,9 @@ class RegisterForm(forms.ModelForm):
         
         
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(widget=forms.PasswordInput, label="Mật khẩu cũ")
-    new_password = forms.CharField(widget=forms.PasswordInput, label="Mật khẩu mới")
-    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Xác nhận mật khẩu mới")
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'id': 'passwordcu', 'onkeyup': 'return batloipasswordcu()'}), label="Mật khẩu cũ")
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'id': 'passwordmoi', 'onkeyup': 'return batloipasswordmoi()'}), label="Mật khẩu mới")
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'id': 'passwordr','onkeyup': 'return batloipasswordr()'}), label="Xác nhận mật khẩu mới")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -33,7 +33,7 @@ class ChangePasswordForm(forms.Form):
 class ForgotPasswordForm(forms.Form):
     email = forms.EmailField(
         label='Email',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Nhập email mà bạn đã đăng ký'})
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Nhập email mà bạn đã đăng ký', 'id': 'email', 'onkeyup': 'return batloiemail()'})
     )
     
     

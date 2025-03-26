@@ -40,11 +40,13 @@
 
                                     <div class="chuadangky2">
                                         <label for="">Username</label>
-                                        <input type="text" name="username" id="">
+                                        <input type="text" name="username" id="username" onkeyup=" return batloiusername()">
+                                        <p id="username_mess"></p>
                                     </div>
                                     <div class="chuadangky3">
                                         <label for="">Password</label>
-                                        <input type="password" name="password" id="password">
+                                        <input type="password" name="password" id="password" onkeyup=" return batloipassword()">
+                                        <p id="password_mess"></p>
                                     </div>
 
                                     <div class="chuadangky4">
@@ -118,16 +120,63 @@
         </div>
     </div>
     
-      
-      <script>
-      document.getElementById('google-login-btn').addEventListener('click', function() {
-        const clientId = '14310137293-ltolga7peevcmvb8jhq7al070416rrtm.apps.googleusercontent.com';
-        const redirectUri = 'http://127.0.0.1:8000/accounts/google/login/callback/';
-        const scope = 'email profile';
+    <script>
+        function batloiusername() {
+            var username = document.getElementById('username');
+            var username_mess = document.getElementById('username_mess');
+            var rs = true;
         
-        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&access_type=offline`;
-      });
-      </script>
+            if (username.value === '') {
+                rs = false;
+                username.style.border = '1px solid red';
+                username_mess.innerText = 'Username không được để trống!';
+                username_mess.style.color = 'red';
+            } else if (username.value.length < 6 || username.value.length > 15) {
+                rs = false;
+                username.style.border = '1px solid red';
+                username_mess.innerText = 'Username từ 6-15 ký tự!';
+                username_mess.style.color = 'red';
+            } else {
+                username.style.border = '1px solid green';
+                username_mess.innerText = 'Username hợp lệ';
+                username_mess.style.color = 'green';
+            }
+        
+            return rs;
+        }
+        
+        function batloipassword() {
+            var password = document.getElementById('password');
+            var password_mess = document.getElementById('password_mess');
+            var rs = true;
+        
+            if (password.value === '') {
+                rs = false;
+                password.style.border = '1px solid red';
+                password_mess.innerText = 'Password không được để trống!';
+                password_mess.style.color = 'red';
+            } else if (password.value.length < 6 || password.value.length > 15) {
+                rs = false;
+                password.style.border = '1px solid red';
+                password_mess.innerText = 'Password từ 6-15 ký tự!';
+                password_mess.style.color = 'red';
+            } else {
+                password.style.border = '1px solid green';
+                password_mess.innerText = 'Password hợp lệ';
+                password_mess.style.color = 'green';
+            }
+        
+            return rs;
+        }
+        document.getElementById('google-login-btn').addEventListener('click', function() {
+            const clientId = '14310137293-ltolga7peevcmvb8jhq7al070416rrtm.apps.googleusercontent.com';
+            const redirectUri = 'http://127.0.0.1:8000/accounts/google/login/callback/';
+            const scope = 'email profile';
+            
+            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&access_type=offline`;
+          });
+    </script>
+    
 </body>
 
 
