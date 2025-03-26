@@ -38,31 +38,49 @@
                                 <div class="chuadangkyso">
                                     <div class="chuadangky1">
                                         <div class="fn">
-                                            <label for="">Fist name</label>
+                                            <label for="">First name</label>
                                             {{ form.first_name }}
+                                            <p id="firstname_mess">
+
+                                            </p>
                                         </div>
                                         <div class="ln">
                                             <label for="">Last name</label>
                                             {{ form.last_name }}
+                                            <p id="lastname_mess">
+
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="chuadangky2">
                                         <label for="">Username</label>
                                         {{ form.username }}
+                                        <p id="username_mess">
+
+                                        </p>
                                     </div>
                                     <div class="chuadangky3">
                                         <label for="">Email address</label>
                                         {{ form.email }}
+                                        <p id="email_mess">
+
+                                        </p>
                                     </div>
         
                                     <div class="chuadangky4">
                                         <div class="pw">
                                             <label for="">Password</label>
                                             {{ form.password }}
+                                            <p id="password_mess">
+
+                                            </p>
                                         </div>
                                         <div class="rpw">
                                             <label for="">Confirm your password</label>
                                             {{ form.rpassword }}
+                                            <p id="rpassword_mess">
+
+                                            </p>
                                         </div>
                                     </div>
                                     {% if messages %}
@@ -77,7 +95,155 @@
                                         <button type="submit">Create</button>
                                     </div>
                                 </div>
-        
+                                <script>
+                                    function batloifirstname() {
+                                        var username = document.getElementById('firstname');
+                                        var username_mess = document.getElementById('firstname_mess');
+                                        var rs = true;
+                                    
+                                        if (username.value === '') {
+                                            rs = false;
+                                            username.style.border = '1px solid red';
+                                            username_mess.innerText = 'Họ không được để trống!';
+                                            username_mess.style.color = 'red';
+                                        } else if ( username.value.length > 10) {
+                                            rs = false;
+                                            username.style.border = '1px solid red';
+                                            username_mess.innerText = 'Họ name không được vượt quá 10 ký tự';
+                                            username_mess.style.color = 'red';
+                                        } else {
+                                            username.style.border = '1px solid green';
+                                            username_mess.innerText = 'Họ Name hợp lệ';
+                                            username_mess.style.color = 'green';
+                                        }
+                                    
+                                        return rs;
+                                    }
+
+                                    function batloilastname() {
+                                        var username = document.getElementById('lastname');
+                                        var username_mess = document.getElementById('lastname_mess');
+                                        var rs = true;
+                                    
+                                        if (username.value === '') {
+                                            rs = false;
+                                            username.style.border = '1px solid red';
+                                            username_mess.innerText = 'Tên không được để trống!';
+                                            username_mess.style.color = 'red';
+                                        } else if ( username.value.length > 30) {
+                                            rs = false;
+                                            username.style.border = '1px solid red';
+                                            username_mess.innerText = 'Tên không được vượt quá 30 ký tự';
+                                            username_mess.style.color = 'red';
+                                        } else {
+                                            username.style.border = '1px solid green';
+                                            username_mess.innerText = 'Tên hợp lệ';
+                                            username_mess.style.color = 'green';
+                                        }
+                                    
+                                        return rs;
+                                    }
+                                    function batloiusername() {
+                                        var username = document.getElementById('username');
+                                        var username_mess = document.getElementById('username_mess');
+                                        var rs = true;
+                                    
+                                        if (username.value === '') {
+                                            rs = false;
+                                            username.style.border = '1px solid red';
+                                            username_mess.innerText = 'Tên đăng nhập không được để trống!';
+                                            username_mess.style.color = 'red';
+                                        } else if (username.value.length < 6 || username.value.length > 15) {
+                                            rs = false;
+                                            username.style.border = '1px solid red';
+                                            username_mess.innerText = 'Tên đăng nhập từ 6-15 ký tự!';
+                                            username_mess.style.color = 'red';
+                                        } else {
+                                            username.style.border = '1px solid green';
+                                            username_mess.innerText = 'Tên đăng nhập hợp lệ';
+                                            username_mess.style.color = 'green';
+                                        }
+                                    
+                                        return rs;
+                                    }
+                                    function batloipassword() {
+                                        var password = document.getElementById('password');
+                                        var password_mess = document.getElementById('password_mess');
+                                        var rs = true;
+                                    
+                                        if (password.value === '') {
+                                            rs = false;
+                                            password.style.border = '1px solid red';
+                                            password_mess.innerText = 'Mật khẩu không được để trống!';
+                                            password_mess.style.color = 'red';
+                                        } else if (password.value.length < 6 || password.value.length > 15) {
+                                            rs = false;
+                                            password.style.border = '1px solid red';
+                                            password_mess.innerText = 'Mật khẩu từ 6-15 ký tự!';
+                                            password_mess.style.color = 'red';
+                                        } else {
+                                            password.style.border = '1px solid green';
+                                            password_mess.innerText = 'Mật khẩu hợp lệ';
+                                            password_mess.style.color = 'green';
+                                        }
+                                    
+                                        return rs;
+                                    }
+                                    function batloirpassword(){
+                                        rppassword = document.getElementById('rpassword')
+                                        rppassword_mess = document.getElementById('rpassword_mess')
+                                        password = document.getElementById('password').value
+                                        rs = true
+                            
+                                        if(rppassword.value === ''){
+                                            rs = false
+                                            rppassword.style.border = '1px solid red'
+                                            rppassword_mess.innerText = 'Nhập lại mật khẩu không được bỏ trống'
+                                            rppassword_mess.style.color = 'red'
+                                        }else if(rppassword.value != password){
+                                            rs = false
+                                            rppassword.style.border = '1px solid red'
+                                            rppassword_mess.innerText = 'Nhập lại mật khẩu không đúng'
+                                            rppassword_mess.style.color = 'red'
+                                        }else{
+                                            rppassword.style.border = '1px solid green'
+                                            rppassword_mess.innerText = 'Nhập lại mật khẩu hợp lệ'
+                                            rppassword_mess.style.color = 'green'
+                                        }
+                                    }
+                                    function batloiemail() {
+                                        var email = document.getElementById('email')
+                                        var email_mess = document.getElementById('email_mess')
+                                        rs = true
+                                        var checkemail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/
+                                        if (email.value === '') {
+                                            rs = false
+                                            email.style.border = '1px solid red'
+                                            email_mess.innerText = 'Email không được để trống'
+                                            email_mess.style.color = 'red'
+                                            return rs
+                                        } else if (!checkemail.test(email.value)) {
+                                            rs = false
+                                            email.style.border = '1px solid red'
+                                            email_mess.innerText = 'Email phải có định dạng @gmail.com'
+                                            email_mess.style.color = 'red'
+                                            return rs
+                                        }
+                                       else{
+                                            email.style.border = '1px solid green';
+                                            email_mess.innerText = 'Email hợp lệ';
+                                            email_mess.style.color = 'green';
+                                       }
+                                        return rs
+                                    }
+                                    document.getElementById('google-login-btn').addEventListener('click', function() {
+                                        const clientId = '14310137293-ltolga7peevcmvb8jhq7al070416rrtm.apps.googleusercontent.com';
+                                        const redirectUri = 'http://127.0.0.1:8000/accounts/google/login/callback/';
+                                        const scope = 'email profile';
+                                        
+                                        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}&access_type=offline`;
+                                      });
+                                </script>
                             </div>
                         </div>
         

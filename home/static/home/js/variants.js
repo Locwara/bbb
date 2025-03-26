@@ -331,5 +331,8 @@
         const variantId = currentVariant.id;
         
         // Chuyển hướng đến trang mua ngay với variant đã chọn
+        var a = [9, 5, 7, 3, 6]
+        a.sort()
+        console.log(a)
         window.location.href = `/login-client/buy-now/${variantId}`;
     }

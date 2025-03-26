@@ -6,13 +6,22 @@ from django.core.exceptions import ValidationError
 # Tạo một đối tượng Form đăng ký kế thừa từ modelForm
 class RegisterForm(forms.ModelForm):
     # Tạo hai biến password và rpassword = hai form dạng nhập là password với dạng text 
-    password = forms.CharField(widget=forms.PasswordInput)
-    rpassword = forms.CharField(widget=forms.PasswordInput)
+   
+    rpassword = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'name': 'rpassword', 'id': 'rpassword', 'onkeyup': 'batloirpassword()'}))
     
     # một class Meta dùng để thao tác với table trong database thông qua models
     class Meta: 
         model = UserClient
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'password']    
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'password']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control',  'id': 'username', 'onkeyup': 'batloiusername()'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'name': 'email', 'id': 'email', 'onkeyup': 'batloiemail()'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'name': 'firstname', 'id': 'firstname', 'onkeyup': 'batloifirstname()'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'name': 'lastname', 'id': 'lastname', 'onkeyup': 'batloilastname()'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'name': 'phonenumber', 'id': 'phonenumber', 'onkeyup': 'batloiphonenumber()'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'name': 'password', 'id': 'password', 'onkeyup': 'batloipassword()'}),
+
+        }    
         
         
 class ChangePasswordForm(forms.Form):

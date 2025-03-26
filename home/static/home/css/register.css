@@ -14,7 +14,7 @@ html{
 }
 #incontainer_login{
     width: 800px;
-    height: 600px;
+    height: 650px;
     border-radius: 24px;
     border:1px solid #00000050;
     display: grid;
@@ -82,7 +82,7 @@ html{
     height: 60px;
     display: flex;
     gap: 10px;
-    
+    padding-bottom: 8px;
 }
 .fn, .ln{
     display: flex;
@@ -91,9 +91,11 @@ html{
 .fn input, .ln input{
     padding-left: 10px;
     width: 195px;
-    height: 60px;
+    height: 35px;
+    min-height: 35px;
     border-radius: 8px;
     border: 0.5px solid #66666650;
+    
 }
 
 .fn label, .ln label, .chuadangky2 label, .chuadangky3 label, .pw label, .rpw label{
@@ -106,13 +108,16 @@ html{
     display: flex;
     flex-direction: column;
     width: 400px;
-    height: 60px;
+    height: 80px;
     margin-top: 10px;
 }
-
+.chuadangkyso{
+    margin-top: 50px;
+}
 .chuadangky2 input{
     width: 415px;
-    height: 60px;
+    height: 35px;
+    min-height: 35px;
     border-radius: 8px;
     border: 0.5px solid #66666650;
     padding-left: 10px;
@@ -120,19 +125,29 @@ html{
 
 
 
-
-
+.chuagg{
+    cursor: pointer;
+}
+.chuadangky4 p, .chuadangky1 p, .chuadangky2 p, .chuadangky3 p{
+    max-height: 10px;
+    font-size: 10px;
+    margin: 0;
+    padding: 3px;
+    margin-bottom: 5px;
+}
 .chuadangky .chuadangkyso .chuadangky3{
     display: flex;
     flex-direction: column;
     width: 400px;
-    height: 60px;
-    margin-top: 10px;
+
+    height: 80px;
+
 }
 
 .chuadangky3 input{
     width: 415px;
-    height: 60px;
+    height: 35px;
+    min-height: 35px;
     border-radius: 8px;
     border: 0.5px solid #66666650;
     padding-left: 10px;
@@ -144,6 +159,7 @@ html{
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    padding-bottom: 8px;
     
 }
 .pw, .rpw{
@@ -152,7 +168,8 @@ html{
 }
 .pw input, .rpw input{
     width: 195px;
-    height: 60px;
+    height: 35px;
+    min-height: 35px;
     border-radius: 8px;
     border: 0.5px solid #66666650;
     padding-left: 10px;

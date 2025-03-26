@@ -129,16 +129,16 @@
             if (username.value === '') {
                 rs = false;
                 username.style.border = '1px solid red';
-                username_mess.innerText = 'Username không được để trống!';
+                username_mess.innerText = 'Tên đăng nhập không được để trống!';
                 username_mess.style.color = 'red';
             } else if (username.value.length < 6 || username.value.length > 15) {
                 rs = false;
                 username.style.border = '1px solid red';
-                username_mess.innerText = 'Username từ 6-15 ký tự!';
+                username_mess.innerText = 'Tên đăng nhập từ 6-15 ký tự!';
                 username_mess.style.color = 'red';
             } else {
                 username.style.border = '1px solid green';
-                username_mess.innerText = 'Username hợp lệ';
+                username_mess.innerText = 'Tên đăng nhập hợp lệ';
                 username_mess.style.color = 'green';
             }
         
@@ -153,16 +153,16 @@
             if (password.value === '') {
                 rs = false;
                 password.style.border = '1px solid red';
-                password_mess.innerText = 'Password không được để trống!';
+                password_mess.innerText = 'Mật khẩu không được để trống!';
                 password_mess.style.color = 'red';
             } else if (password.value.length < 6 || password.value.length > 15) {
                 rs = false;
                 password.style.border = '1px solid red';
-                password_mess.innerText = 'Password từ 6-15 ký tự!';
+                password_mess.innerText = 'Mật khẩu từ 6-15 ký tự!';
                 password_mess.style.color = 'red';
             } else {
                 password.style.border = '1px solid green';
-                password_mess.innerText = 'Password hợp lệ';
+                password_mess.innerText = 'Mật khẩu hợp lệ';
                 password_mess.style.color = 'green';
             }
         
