@@ -318,7 +318,8 @@
         })
         .catch(error => {
             console.error('Lỗi:', error);
-            alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+            alert('Vui lòng đăng nhập trước khi sử dụng giỏ hàng!');
+            window.location.href = loginUrl
         });
     }
     

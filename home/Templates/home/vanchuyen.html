@@ -1,0 +1,87 @@
+{% extends 'home/home.html' %}
+
+{% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Chính sách vận chuyển</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
+<div class="container">
+    <h1>Chính Sách Vận Chuyển Beee</h1>
+    
+    <section class="shipping-areas">
+        <h2>Khu Vực Phục Vụ</h2>
+        <p>Beee phục vụ vận chuyển trên toàn quốc, bao gồm:</p>
+        <ul>
+            <li>Khu vực Thành phố (Hà Nội, TP. Hồ Chí Minh)</li>
+            <li>Các tỉnh thành miền Bắc</li>
+            <li>Các tỉnh miền Trung</li>
+            <li>Các tỉnh miền Nam</li>
+        </ul>
+    </section>
+
+    <section class="shipping-methods">
+        <h2>Phương Thức Vận Chuyển</h2>
+        <div class="method">
+            <h3>Giao Hàng Tiêu Chuẩn</h3>
+            <p>Thời gian: 3-5 ngày làm việc</p>
+            <p>Phí: Miễn phí với đơn hàng từ 500,000đ</p>
+        </div>
+        
+        <div class="method">
+            <h3>Giao Hàng Nhanh</h3>
+            <p>Thời gian: 1-2 ngày làm việc</p>
+            <p>Phí: 30,000đ</p>
+        </div>
+        
+        <div class="method">
+            <h3>Giao Hàng Siêu Tốc</h3>
+            <p>Thời gian: Trong ngày (áp dụng tại TP. Hồ Chí Minh và Hà Nội)</p>
+            <p>Phí: 50,000đ</p>
+        </div>
+    </section>
+
+    <section class="shipping-process">
+        <h2>Quy Trình Giao Hàng</h2>
+        <ol>
+            <li>Xác nhận đơn hàng</li>
+            <li>Đóng gói sản phẩm</li>
+            <li>Bàn giao cho đơn vị vận chuyển</li>
+            <li>Cập nhật thông tin tracking</li>
+            <li>Giao hàng thành công</li>
+        </ol>
+    </section>
+
+    <section class="shipping-notes">
+        <h2>Lưu Ý</h2>
+        <ul>
+            <li>Beee không chịu trách nhiệm với các trường hợp hư hỏng do vận chuyển sau khi đã bàn giao</li>
+            <li>Khách hàng vui lòng kiểm tra hàng trước khi ký nhận</li>
+            <li>Trong trường hợp hàng bị lỗi, vui lòng liên hệ CSKH trong vòng 24h</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

@@ -3,6 +3,36 @@
 {% block title %}Danh sách đơn hàng{% endblock %}
 {% load custom_filters %}
 {% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="c" onclick="window.location.href='{% url 'profile' %}'">Thông tin của bạn</p>
+    <p>/</p>
+    <p class="m" >Đơn hàng của bạn</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
 {% if messages %}
     <div class="messages">
         {% for message in messages %}
@@ -13,7 +43,7 @@
     </div>
 {% endif %}
 <div class="container my-4">
-    <h2 class="text-center mb-4" style="color: #2e7d32;">Đơn hàng của tôi</h2>
+    <h2 class="text-center mb-4" style="color: #2e7d32;">Đơn hàng của bạn</h2>
 
     <!-- Bộ lọc trạng thái -->
     <div class="card mb-4" style="border-color: #81c784;">

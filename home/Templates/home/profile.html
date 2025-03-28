@@ -3,6 +3,42 @@
 
 
 {% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Thông tin của bạn</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
+<script>
+    window.addEventListener('load', function() {
+        {% if not user.phone_number %}
+            alert('Vui lòng thêm số điện thoại của bạn');
+            window.location.href = '{% url "update_profile" %}';
+        {% endif %}
+    });
+    </script>
 <style>
     .profile-container {
         max-width: 1200px;

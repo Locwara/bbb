@@ -294,8 +294,8 @@ button {
     animation: slideIn 0.3s ease-out;
 }
 .chuagg svg, .chuafb svg{
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 30px;
+    min-height: 30px;
 }
 
 .chuagg{
@@ -310,7 +310,7 @@ button {
 }
 .chuagg p{
     color: #666666;
-    font-size: 20px;
+    font-size: 17px;
 }
 .chuafb{
     padding: 0px 10px 0px 10px;

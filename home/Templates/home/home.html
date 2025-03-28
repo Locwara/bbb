@@ -13,6 +13,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+        <style>
+            .suggestions-container {
+                position: absolute;
+                width: 100%;
+                max-height: 300px;
+                overflow-y: auto;
+                background-color: white;
+                border: 1px solid #ddd;
+                z-index: 1000;
+                display: none;
+                top: 50px;
+                border-radius: 0 0 8px 8px;
+            }
+            .suggestion-item {
+                padding: 10px;
+                cursor: pointer;
+                border-bottom: 1px solid #f1f1f1;
+            }
+            .suggestion-item:hover {
+                background-color: #f9f9f9;
+            }
+        </style>
 </head>
 
 <body>
@@ -44,12 +66,95 @@
                 </div>
             </div>
             <div class="chuasearchicon">
-                <div class="chuasearch">
-                    <form class="ftk" action="{% url 'search_products' %}" method="GET">
-                        <input class="searchhd" type="text" name="search" placeholder="Tìm kiếm sản phẩm" required>
+                <div class="chuasearch" style="position: relative;">
+                    <form class="ftk" action="{% url 'search_products' %}" method="GET" id="searchForm">
+                        <input class="searchhd" type="text" name="search" id="searchInput" placeholder="Tìm kiếm sản phẩm" required autocomplete="off">
                         <button class="tk" type="submit">Search</button>
                     </form>
+                    <div id="suggestionsContainer" class="suggestions-container"></div>
                 </div>
+            
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const searchInput = document.getElementById('searchInput');
+                        const suggestionsContainer = document.getElementById('suggestionsContainer');
+                        const searchForm = document.getElementById('searchForm');
+                    
+                        // Lấy CSRF token từ cookie
+                        const csrftoken = getCookie('csrftoken');
+                    
+                        let debounceTimer;
+                    
+                        searchInput.addEventListener('input', function() {
+                            clearTimeout(debounceTimer);
+                            const query = this.value.trim();
+                    
+                            if (query.length === 0) {
+                                suggestionsContainer.style.display = 'none';
+                                return;
+                            }
+                            const search_url = "{% url 'product_suggestions' %}"
+                            debounceTimer = setTimeout(() => {
+                                fetch(`${search_url}?query=${encodeURIComponent(query)}`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-CSRFToken': csrftoken,
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    suggestionsContainer.innerHTML = '';
+                                    
+                                    if (data.suggestions.length > 0) {
+                                        data.suggestions.forEach(suggestion => {
+                                            const suggestionItem = document.createElement('div');
+                                            suggestionItem.classList.add('suggestion-item');
+                                            suggestionItem.textContent = suggestion.name;
+                                            suggestionItem.addEventListener('click', function() {
+                                                searchInput.value = suggestion.name;
+                                                suggestionsContainer.style.display = 'none';
+                                                searchForm.submit();
+                                            });
+                                            suggestionsContainer.appendChild(suggestionItem);
+                                        });
+                                        suggestionsContainer.style.display = 'block';
+                                    } else {
+                                        suggestionsContainer.style.display = 'none';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    suggestionsContainer.style.display = 'none';
+                                });
+                            }, 300);
+                        });
+                    
+                        // Hàm lấy CSRF token từ cookie
+                        function getCookie(name) {
+                            let cookieValue = null;
+                            if (document.cookie && document.cookie !== '') {
+                                const cookies = document.cookie.split(';');
+                                for (let i = 0; i < cookies.length; i++) {
+                                    const cookie = cookies[i].trim();
+                                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                        break;
+                                    }
+                                }
+                            }
+                            return cookieValue;
+                        }
+                    
+                        // Ẩn suggestions khi click ngoài
+                        document.addEventListener('click', function(event) {
+                            if (!searchInput.contains(event.target) && 
+                                !suggestionsContainer.contains(event.target)) {
+                                suggestionsContainer.style.display = 'none';
+                            }
+                        });
+                    });
+                </script>
                 <div class="chuaicon">
                     <div class="icon">
                         <i class="bi bi-cart" onclick="window.location.href='{% url 'cart' %}'"></i>
@@ -573,20 +678,30 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="ft">
                 <div class="lot">
                     <h4>GIỚI THIỆU</h4>
-                    <div class="chuamotaft">
-                        <p class="gtv">Về Beee</p>
-                        <p class="gtv">Liên hệ</p>
-                        <p class="gtv">Tin tức</p>
+                    <div class="chuamotaft gt4">
+                        <p class="gtv" onclick="window.location.href='{% url 'vebeee' %}'">Về Beee</p>
+                        <p class="gtv" onclick="window.location.href='{% url 'lienhe' %}'">Liên hệ</p>
+                        <p class="gtv" onclick="window.location.href='{% url 'tintuc' %}'">Tin tức</p>
                     </div>
                 </div>
             </div>
+            <style>
+                .gt4 p{
+                    cursor: pointer;
+                }
+
+                .gt4 p:hover{
+                    color: rgba(0, 128, 0, 0.507);
+                    transition: 0.3s;
+                }
+            </style>
             <div class="ft">
                 <div class="lot">
                     <h4 class="csbh">CHÍNH SÁCH BÁN HÀNG</h4>
-                    <div class="chuamotaft">
-                        <p class="gtv">CHÍNH SÁCH ĐỔI TRẢ</p>
-                        <p class="gtv">CHÍNH SÁCH VẬN CHUYỂN</p>
-                        <p class="gtv">CHÍNH SÁCH BẢO MẬT</p>
+                    <div class="chuamotaft gt4">
+                        <p class="gtv" onclick="window.location.href='{% url 'doitra' %}'">CHÍNH SÁCH ĐỔI TRẢ</p>
+                        <p class="gtv" onclick="window.location.href='{% url 'vanchuyen' %}'">CHÍNH SÁCH VẬN CHUYỂN</p>
+                        <p class="gtv" onclick="window.location.href='{% url 'baomat' %}'">CHÍNH SÁCH BẢO MẬT</p>
                     </div>
                 </div>
             </div>

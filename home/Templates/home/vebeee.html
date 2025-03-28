@@ -1,0 +1,62 @@
+{% extends 'home/home.html' %}
+
+{% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Giới thiệu về Beee</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
+<div class="container">
+    <h1>Về Beee - Thế Giới Thời Trang Dành Cho Phái Đẹp</h1>
+    
+    <section class="brand-story">
+        <h2>Câu Chuyện Thương Hiệu</h2>
+        <p>Beee ra đời từ năm 2022 với khát khao mang đến cho phụ nữ Việt Nam những bộ trang phục không chỉ đẹp mà còn tôn vinh vẻ đẹp riêng của mỗi cá nhân. Chúng tôi tin rằng mỗi người phụ nữ đều có một phong cách riêng biệt, và nhiệm vụ của Beee là giúp họ tỏa sáng một cách tự tin nhất.</p>
+    </section>
+
+    <section class="mission-vision">
+        <h2>Sứ Mệnh Và Tầm Nhìn</h2>
+        <div class="mission">
+            <h3>Sứ Mệnh</h3>
+            <p>Beee cam kết mang đến những sản phẩm thời trang chất lượng, thiết kế hiện đại, phù hợp với vóc dáng và phong cách của phụ nữ Việt. Chúng tôi không chỉ bán quần áo mà còn lan tỏa nguồn năng lượng tích cực, giúp phái đẹp luôn tự tin và rạng rỡ.</p>
+        </div>
+        <div class="vision">
+            <h3>Tầm Nhìn</h3>
+            <p>Trở thành thương hiệu thời trang nữ hàng đầu Việt Nam, được yêu mến bởi sự đổi mới, chất lượng và tinh thần nữ quyền.</p>
+        </div>
+    </section>
+
+    <section class="core-values">
+        <h2>Giá Trị Cốt Lõi</h2>
+        <ul>
+            <li><strong>Chất Lượng:</strong> Cam kết mang đến sản phẩm có chất lượng vải, đường may tỉ mỉ</li>
+            <li><strong>Đa Dạng:</strong> Thiết kế phù hợp mọi dáng người, mọi phong cách</li>
+            <li><strong>Tôn Trọng:</strong> Tôn trọng và nâng niu vẻ đẹp của mỗi phụ nữ</li>
+            <li><strong>Sáng Tạo:</strong> Không ngừng đổi mới, theo kịp xu hướng thời trang quốc tế</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}

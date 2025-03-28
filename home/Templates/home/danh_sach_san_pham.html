@@ -3,8 +3,37 @@
 
 {% load custom_filters %}
 {% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Các sản phẩm</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
 <link rel="stylesheet" href="{% static 'home/css/danh_sach_san_pham.css' %}">
 <div class="container">
+    <h4 class="dmsp">CÁC SẢN PHẨM CỦA BEEE</h4>
     <div class="row">
         <!-- Sidebar Lọc -->
         <div class="col-md-3">
@@ -102,8 +131,8 @@
         <!-- Danh Sách Sản Phẩm -->
         <div class="col-md-9">
             <div class="danhsachspnnm">
-                <h4 class="dmsp">CÁC SẢN PHẨM CỦA BEEE</h4>
-                <div class="row chuasp">
+                
+                <div class="row chuaspl">
                     {% for item in product_list %}
                     <div class="col-md-3 mb-4">
                         <div class="sp">

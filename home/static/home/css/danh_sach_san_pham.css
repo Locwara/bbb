@@ -26,9 +26,15 @@
     margin-top: 50px;
 }
 
+.danhsachspnnm {
+    max-height: 1200px;
+    overflow-y: auto;
+    overflow-x: hidden;   
 
+  }
+  
 .col-md-9{
-    margin-top: 20px;
+
 }
 
 
@@ -67,7 +73,11 @@
     border-radius: 12px;
     margin-top: 10px;
 }
-
+.chuaspl{
+    max-height: 700px;
+    overflow-y: auto;
+    padding-top: 20px;
+}
 
 .btn-loc:hover{
     transform: scale(1.05);

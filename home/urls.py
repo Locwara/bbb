@@ -37,5 +37,11 @@ urlpatterns = [
     path('danh-sach-san-pham/', home.danh_sach_san_pham, name='danh_sach_san_pham'),
     path('buy-now/<int:variant_id>/', home.buy_now, name='buy_now'),
     path('search/', home.search_products, name='search_products'),
-
+    path('vebeee/', home.get_vebeee, name='vebeee'),
+    path('lienhe/', home.get_lienhe, name='lienhe'),
+    path('tintuc/', home.get_tintuc, name='tintuc'),
+    path('doitra/', home.get_doitra, name='doitra'),
+    path('vanchuyen/', home.get_vanchuyen, name='vanchuyen'),
+    path('baomat', home.get_baomat, name='baomat'),
+    path('product-suggestions/', home.product_suggestions, name='product_suggestions'),
 ]

@@ -1,0 +1,66 @@
+{% extends 'home/home.html' %}
+
+{% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Chín sách đổi trả</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
+<div class="container">
+    <h1>Chính Sách Đổi Trả Beee</h1>
+    
+    <section class="general-policy">
+        <h2>Quy Định Chung</h2>
+        <p>Beee luôn đặt quyền lợi của khách hàng lên hàng đầu. Chúng tôi hiểu rằng việc mua sắm online đôi khi không như mong đợi, vì vậy chính sách đổi trả của chúng tôi rõ ràng, minh bạch và thuận tiện.</p>
+    </section>
+
+    <section class="exchange-conditions">
+        <h2>Điều Kiện Đổi Trả</h2>
+        <ul>
+            <li>Thời gian đổi trả: Trong vòng 7 ngày kể từ ngày nhận hàng</li>
+            <li>Sản phẩm nguyên giá, chưa qua sử dụng</li>
+            <li>Còn nguyên nhãn mác, tem của Beee</li>
+            <li>Không áp dụng với các sản phẩm sale off trên 30%</li>
+        </ul>
+    </section>
+
+    <section class="exchange-process">
+        <h2>Quy Trình Đổi Trả</h2>
+        <ol>
+            <li>Khách hàng liên hệ CSKH để được hướng dẫn</li>
+            <li>Nhân viên xác nhận thông tin và điều kiện đổi trả</li>
+            <li>Khách hàng gửi sản phẩm về địa chỉ của Beee</li>
+            <li>Beee kiểm tra sản phẩm và xử lý trong vòng 3-5 ngày làm việc</li>
+            <li>Hoàn tiền hoặc đổi sản phẩm theo yêu cầu khách hàng</li>
+        </ol>
+    </section>
+
+    <section class="shipping-fees">
+        <h2>Chi Phí Vận Chuyển</h2>
+        <p>Khách hàng chịu chi phí vận chuyển khi đổi trả. Beee khuyến khích khách hàng cân nhắc kỹ trước khi quyết định đổi trả.</p>
+    </section>
+</div>
+{% endblock %}

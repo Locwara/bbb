@@ -1022,7 +1022,7 @@ from .models import Address, Order
 # views.py
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Address, Order, CartItem, OrderItem
+from .models import Address, Order, CartItem, OrderItem, UsedVoucher
 from .models import Order, OrderItem, Address, Cart, CartItem, Voucher
         
 from django.utils import timezone
@@ -1122,14 +1122,24 @@ def checkout_view(request):
                     valid_from__lte=current_time,
                     valid_to__gte=current_time
                 )
-                
+                user = request.user  # Giả sử bạn đang sử dụng authentication
+                existing_used_voucher = UsedVoucher.objects.filter(
+                user=user, 
+                voucher=voucher
+                ).exists()
+                if existing_used_voucher:
+                    messages.error(request, 'Mã giảm giá này đã được bạn sử dụng trước đó!')
+                    return redirect('checkout')
                 # Lưu thông tin voucher vào session
                 request.session['voucher_id'] = voucher.id
                 request.session['voucher_code'] = voucher.code
                 request.session['voucher_discount'] = float(voucher.discount_amount)
-                
+                UsedVoucher.objects.create(
+                user=user,
+                voucher=voucher
+            )
                 messages.success(request, f'Áp dụng mã giảm giá "{voucher_code}" thành công!')
-                
+                 
                 # Chuyển hướng để tránh gửi lại form khi refresh
                 return redirect('checkout')
                 
@@ -1807,3 +1817,38 @@ def search_products(request):
         'search_query': search_query,
         'message': f'Tìm thấy {len(product_list)} sản phẩm' if product_list else 'Không tìm thấy sản phẩm nào'
     })
+    
+    
+def get_vebeee(request):
+    return render(request, 'home/vebeee.html')
+def get_lienhe(request):
+    return render(request, 'home/lienhe.html')
+
+def get_tintuc(request):
+    return render(request, 'home/tintuc.html')
+def get_doitra(request):
+    return render(request, 'home/doitra.html')
+def get_vanchuyen(request):
+    return render(request, 'home/vanchuyen.html')
+def get_baomat(request):
+    return render(request, 'home/baomat.html')
+
+
+
+def product_suggestions(request):
+    # Lấy từ khóa tìm kiếm từ request
+    query = request.GET.get('query', '').strip()
+    
+    # Nếu không có từ khóa, trả về list rỗng
+    if not query:
+        return JsonResponse({'suggestions': []})
+    
+    # Tìm kiếm sản phẩm theo tên, không phân biệt hoa thường
+    suggestions = Product.objects.filter(
+        Q(name__icontains=query)
+    ).values('id', 'name')[:5]  # Giới hạn 5 kết quả
+    
+    # Chuyển đổi QuerySet thành list
+    suggestion_list = list(suggestions)
+    
+    return JsonResponse({'suggestions': suggestion_list})

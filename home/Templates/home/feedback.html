@@ -1,6 +1,37 @@
 {% extends 'home/home.html' %}
 
 {% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="c" onclick="window.location.href='{% url 'profile' %}'">Thông tin của bạn</p>
+    <p>/</p>
+    <p class="c" onclick="window.location.href='{% url 'order_list' %}'">Đơn hàng của bạn</p>
+    <p>/</p>
+    <p class="m">Phản hồi với Beee</p>
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
 <div class="container mt-4">
     <h2>Phản Hồi Đơn Hàng #{{ order.id }}</h2>
     
@@ -15,12 +46,12 @@
         background-color: #000;
     }
     .btn:hover{
-        background-color: #000;
+        background-color: #000 !important;
         transform: scale(1.1);
         transition: 0.3s;
     }
     .btn:active{
-        background-color: #000;
+        background-color: #000 !important;
         transform: scale(1.1);
         transition: 0.3s;
     }

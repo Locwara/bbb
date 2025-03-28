@@ -1,0 +1,63 @@
+{% extends 'home/home.html' %}
+
+{% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Tin tức</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
+<div class="container">
+    <h1>Tin Tức Thời Trang Beee</h1>
+    
+    <section class="fashion-trends">
+        <h2>Xu Hướng Thời Trang</h2>
+        
+        <article class="trend-article">
+            <h3>Xu Hướng Xuân Hè 2025: Rực Rỡ Và Tự Do</h3>
+            <p>Mùa này, Beee mang đến cho bạn những BST với tone màu rực rỡ, các thiết kế thoáng đãng và tự do. Chúng tôi kết hợp các chất liệu mềm mại như lụa, cotton organic cùng những đường cắt hiện đại.</p>
+        </article>
+        
+        <article class="trend-article">
+            <h3>Xu Hướng Layer - Nghệ Thuật Phối Đồ Đỉnh Cao</h3>
+            <p>Layering không còn là xu hướng mà đã trở thành một nghệ thuật. Beee sẽ hướng dẫn bạn cách phối đồ layer đẹp, tạo nên set đồ cá tính và ấn tượng.</p>
+        </article>
+    </section>
+
+    <section class="promotions">
+        <h2>Khuyến Mãi Đặc Biệt</h2>
+        
+        <article class="promo-article">
+            <h3>Sale Off Mùa Hè - Lên Đến 50%</h3>
+            <p>Từ ngày 1/6 - 30/6, Beee dành tặng các tín đồ thời trang những ưu đãi cực khủng. Giảm giá lên đến 50% toàn bộ BST Xuân Hè, đảm bảo sẽ làm cho các nàng "điên đảo"!</p>
+        </article>
+        
+        <article class="promo-article">
+            <h3>Chương Trình Thành Viên - Ưu Đãi Độc Quyền</h3>
+            <p>Trở thành thành viên Beee để nhận ngay những ưu đãi đặc biệt: Giảm 10% cho mỗi đơn hàng, miễn phí vận chuyển, quà tặng sinh nhật và nhiều điều bất ngờ khác.</p>
+        </article>
+    </section>
+</div>
+{% endblock %}

@@ -229,3 +229,20 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback for Order {self.order_id}"
+    
+    
+class UsedVoucher(models.Model):
+    """
+    Model to track vouchers used by users
+    """
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('UserClient', on_delete=models.CASCADE, related_name='used_vouchers')
+    voucher = models.ForeignKey('Voucher', on_delete=models.CASCADE, related_name='used_by_users')
+    used_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'used_voucher'
+        unique_together = ('user', 'voucher')  # Ensure a user can't use the same voucher multiple times
+
+    def __str__(self):
+        return f"{self.user.username} - {self.voucher.code}"

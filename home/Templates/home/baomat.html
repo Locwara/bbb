@@ -1,0 +1,81 @@
+{% extends 'home/home.html' %}
+
+{% block content %}
+<div class="nava">
+    <p onclick="window.location.href='{% url 'home' %}'" class="c">Trang chủ</p>
+    <p>/</p>
+    <p class="m" >Chính sách bảo mật</p>
+
+</div>
+<style>
+    .m{
+        color: rgba(0, 128, 0, 0.459);
+    }
+    .nava{
+        display: flex;
+        gap: 5px;
+        margin-top: 20px;
+        margin-left: 20px;
+
+    }
+    .nava .c{
+        cursor: pointer;
+    }
+
+    .nava .c:hover{
+        font-weight: bold;
+        transform: scale(1.03);
+        transition: 0.3s;
+    }
+
+</style>
+<div class="container">
+    <h1>Chính Sách Bảo Mật Thông Tin</h1>
+    
+    <section class="policy-overview">
+        <h2>Cam Kết Bảo Mật</h2>
+        <p>Beee cam kết bảo vệ mọi thông tin cá nhân của khách hàng với tiêu chí: An Toàn - Minh Bạch - Tôn Trọng.</p>
+    </section>
+
+    <section class="collected-info">
+        <h2>Thông Tin Thu Thập</h2>
+        <p>Chúng tôi chỉ thu thập những thông tin cần thiết phục vụ cho quá trình mua bán và chăm sóc khách hàng:</p>
+        <ul>
+            <li>Họ và tên</li>
+            <li>Số điện thoại</li>
+            <li>Địa chỉ Email</li>
+            <li>Địa chỉ giao hàng</li>
+        </ul>
+    </section>
+
+    <section class="info-usage">
+        <h2>Mục Đích Sử Dụng Thông Tin</h2>
+        <ul>
+            <li>Xử lý đơn hàng</li>
+            <li>Giao hàng</li>
+            <li>Thông báo khuyến mãi</li>
+            <li>Chăm sóc khách hàng</li>
+        </ul>
+    </section>
+
+    <section class="info-protection">
+        <h2>Cam Kết Bảo Vệ Thông Tin</h2>
+        <p>Beee áp dụng các biện pháp an ninh để bảo vệ thông tin cá nhân:</p>
+        <ul>
+            <li>Mã hóa dữ liệu</li>
+            <li>Hệ thống tường lửa</li>
+            <li>Quản lý truy cập nghiêm ngặt</li>
+            <li>Không cung cấp thông tin cho bên thứ ba</li>
+        </ul>
+    </section>
+
+    <section class="customer-rights">
+        <h2>Quyền Của Khách Hàng</h2>
+        <ul>
+            <li>Được biết thông tin của mình được sử dụng như thế nào</li>
+            <li>Được yêu cầu xóa hoặc cập nhật thông tin</li>
+            <li>Từ chối nhận thông tin marketing</li>
+        </ul>
+    </section>
+</div>
+{% endblock %}
