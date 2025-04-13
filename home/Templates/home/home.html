@@ -25,15 +25,64 @@
                 display: none;
                 top: 50px;
                 border-radius: 0 0 8px 8px;
+                
+                opacity: 0;
+                transform: scaleY(0);
+                transform-origin: top;
+                transition: all 0.3s ease-out;
             }
+        
+            .suggestions-container.show {
+                display: block;
+                opacity: 1;
+                transform: scaleY(1);
+            }
+        
             .suggestion-item {
+                display: flex;
+                align-items: center;
                 padding: 10px;
                 cursor: pointer;
                 border-bottom: 1px solid #f1f1f1;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: opacity 0.3s ease-out, transform 0.3s ease-out;
             }
+        
+            .suggestion-item .suggestion-icon {
+                margin-right: 10px;
+                width: 20px;
+                height: 20px;
+                background-size: cover;
+            }
+        
+            .suggestion-item.suggestion-product_type {
+                background-color: #f0f0ff;
+            }
+        
+            .suggestion-item.suggestion-category {
+                background-color: #f0fff0;
+            }
+        
+            .suggestion-item.suggestion-product {
+                background-color: #fff0f0;
+            }
+        
+            .suggestions-container.show .suggestion-item {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        
             .suggestion-item:hover {
-                background-color: #f9f9f9;
+                background-color: #e0e0e0;
             }
+        
+            /* Stagger animation */
+            .suggestions-container.show .suggestion-item:nth-child(1) { transition-delay: 0.1s; }
+            .suggestions-container.show .suggestion-item:nth-child(2) { transition-delay: 0.2s; }
+            .suggestions-container.show .suggestion-item:nth-child(3) { transition-delay: 0.3s; }
+            .suggestions-container.show .suggestion-item:nth-child(4) { transition-delay: 0.4s; }
+            .suggestions-container.show .suggestion-item:nth-child(5) { transition-delay: 0.5s; }
         </style>
 </head>
 
@@ -51,16 +100,19 @@
                     <div class="nut">
                         <a href="{% url 'danh_sach_san_pham' %}?category={{ ao_category_id }}" class="text-decoration-none text-dark">
                             <p>ÁO</p>
+                            <span class="icon-ao"></span>
                         </a>
                     </div>
                     <div class="nut">
                         <a href="{% url 'danh_sach_san_pham' %}?category={{ quan_category_id }}" class="text-decoration-none text-dark">
                             <p>QUẦN</p>
+                            <span class="icon-quan"></span>
                         </a>
                     </div>
                     <div class="nut">
                         <a href="{% url 'danh_sach_san_pham' %}?category={{ vay_category_id }}" class="text-decoration-none text-dark">
                             <p>VÁY</p>
+                            <span class="icon-vay"></span>
                         </a>
                     </div>
                 </div>
@@ -79,21 +131,20 @@
                         const searchInput = document.getElementById('searchInput');
                         const suggestionsContainer = document.getElementById('suggestionsContainer');
                         const searchForm = document.getElementById('searchForm');
-                    
-                        // Lấy CSRF token từ cookie
+                        
                         const csrftoken = getCookie('csrftoken');
-                    
                         let debounceTimer;
-                    
+                        
                         searchInput.addEventListener('input', function() {
                             clearTimeout(debounceTimer);
                             const query = this.value.trim();
                     
                             if (query.length === 0) {
-                                suggestionsContainer.style.display = 'none';
+                                suggestionsContainer.classList.remove('show');
                                 return;
                             }
-                            const search_url = "{% url 'product_suggestions' %}"
+                    
+                            const search_url = "{% url 'product_suggestions' %}";
                             debounceTimer = setTimeout(() => {
                                 fetch(`${search_url}?query=${encodeURIComponent(query)}`, {
                                     method: 'GET',
@@ -109,28 +160,49 @@
                                     if (data.suggestions.length > 0) {
                                         data.suggestions.forEach(suggestion => {
                                             const suggestionItem = document.createElement('div');
-                                            suggestionItem.classList.add('suggestion-item');
-                                            suggestionItem.textContent = suggestion.name;
+                                            suggestionItem.classList.add('suggestion-item', `suggestion-${suggestion.type}`);
+                                            
+                                            // Tạo icon
+                                            const iconSpan = document.createElement('span');
+                                            iconSpan.classList.add('suggestion-icon', suggestion.icon);
+                                            suggestionItem.appendChild(iconSpan);
+                                            
+                                            // Tạo text
+                                            const textSpan = document.createElement('span');
+                                            textSpan.textContent = suggestion.name;
+                                            suggestionItem.appendChild(textSpan);
+                                            
                                             suggestionItem.addEventListener('click', function() {
                                                 searchInput.value = suggestion.name;
-                                                suggestionsContainer.style.display = 'none';
+                                                suggestionsContainer.classList.remove('show');
                                                 searchForm.submit();
                                             });
                                             suggestionsContainer.appendChild(suggestionItem);
                                         });
-                                        suggestionsContainer.style.display = 'block';
+                                        
+                                        setTimeout(() => {
+                                            suggestionsContainer.classList.add('show');
+                                        }, 10);
                                     } else {
-                                        suggestionsContainer.style.display = 'none';
+                                        // Xử lý khi không có gợi ý
+                                        const noResultItem = document.createElement('div');
+                                        noResultItem.classList.add('suggestion-item', 'no-results');
+                                        
+                                        const textSpan = document.createElement('span');
+                                        textSpan.textContent = 'Không tìm thấy kết quả phù hợp';
+                                        noResultItem.appendChild(textSpan);
+                                        
+                                        suggestionsContainer.appendChild(noResultItem);
+                                        suggestionsContainer.classList.add('show');
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
-                                    suggestionsContainer.style.display = 'none';
+                                    suggestionsContainer.classList.remove('show');
                                 });
                             }, 300);
                         });
-                    
-                        // Hàm lấy CSRF token từ cookie
+                        
                         function getCookie(name) {
                             let cookieValue = null;
                             if (document.cookie && document.cookie !== '') {
@@ -145,15 +217,14 @@
                             }
                             return cookieValue;
                         }
-                    
-                        // Ẩn suggestions khi click ngoài
+                        
                         document.addEventListener('click', function(event) {
                             if (!searchInput.contains(event.target) && 
                                 !suggestionsContainer.contains(event.target)) {
-                                suggestionsContainer.style.display = 'none';
+                                suggestionsContainer.classList.remove('show');
                             }
                         });
-                    });
+                    }); 
                 </script>
                 <div class="chuaicon">
                     <div class="icon">
@@ -179,6 +250,46 @@
 {% endif %}
 
 <style>
+  /* CSS chung cho các nút */
+.chuanuthd {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+    
+.nut a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nut p {
+    margin: 0 8px 0 0;
+    font-weight: 600;
+}
+
+/* Đảm bảo hiển thị icon */
+.icon-ao, .icon-quan, .icon-vay {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.icon-ao {
+    background-image: url("{% static 'home/images/womens-clothing.png' %}");
+}
+
+.icon-quan {
+    background-image: url("{% static 'home/images/shorts.png' %}");
+}
+
+.icon-vay {
+    background-image: url("{% static 'home/images/woman-clothes.png' %}");
+}
 /* CSS cho thông báo */
 .django-messages {
   position: fixed;
@@ -412,8 +523,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="chuadl">
                                 <p class="tensp">{{ item.product.name }}</p>
                                 <div class="chuagia">
-                                    <div class="giagiam">{{ item.giagiam }}</div>
-                                    <div class="giagoc">{{ item.giagoc }}</div>
+                                    <div class="giagiam">{{ item.giagiam }} đ</div>
+                                    <div class="giagoc">{{ item.giagoc }} đ</div>
                                     <div class="ptg">
                                         <p>-{{ item.discount_percent|floatformat:0 }}%</p>
                                     </div>

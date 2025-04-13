@@ -45,14 +45,11 @@ class AuthenticationMiddleware:
             '/login-client/cart/update/',
             '/login-client/cart/remove/',
             '/paypal/',
-            '/product-suggestions/',  # Thêm dòng này
+            'login-client/address/delete'
         ]
 
         # Kiểm tra nếu URL là công khai hoặc có prefix được phép
-        is_public_url = (
-            request.path in public_urls or 
-            any(request.path.startswith(prefix) for prefix in allowed_prefixes)
-        )
+        is_public_url = request.path in public_urls or any(request.path.startswith(prefix) for prefix in allowed_prefixes)
 
         # Bỏ qua kiểm tra nếu là request từ PayPal (IPN/Webhook)
         if is_public_url:

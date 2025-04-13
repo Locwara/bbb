@@ -27,6 +27,7 @@
 }
 
 .danhsachspnnm {
+    min-width: 1050px;
     max-height: 1200px;
     overflow-y: auto;
     overflow-x: hidden;   
@@ -74,7 +75,9 @@
     margin-top: 10px;
 }
 .chuaspl{
-    max-height: 700px;
+    padding-left: 20px;
+    padding-right: 20px;
+    max-height: 900px;
     overflow-y: auto;
     padding-top: 20px;
 }

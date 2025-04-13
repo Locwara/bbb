@@ -168,12 +168,13 @@ class OrderItem(models.Model):
         
 # models.py
 class Address(models.Model):
-    user = models.ForeignKey(UserClient , on_delete=models.CASCADE)
+    user = models.ForeignKey(UserClient, on_delete=models.CASCADE)
     street = models.CharField(max_length=255)
     ward = models.CharField(max_length=100)
     district = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     is_default = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=[('visible', 'Hiển thị'), ('hidden', 'Ẩn')], default='visible')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -183,14 +184,12 @@ class Address(models.Model):
         # Tự động hủy tất cả địa chỉ mặc định khác nếu đánh dấu mặc định
         if self.is_default:
             Address.objects.filter(user=self.user, is_default=True).update(is_default=False)
-        super().save(*args, **kwargs)   
+        super().save(*args, **kwargs)
 
 class Voucher(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=20, unique=True)
     discount_amount = models.DecimalField(max_digits=5, decimal_places=2)  # Phần trăm giảm giá
-    valid_from = models.DateTimeField()
-    valid_to = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     def is_valid(self):

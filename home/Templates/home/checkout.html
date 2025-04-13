@@ -47,6 +47,105 @@
     
     {% if cart_items %}
     <div class="row">
+        
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Đơn hàng của bạn</h4>
+                </div>
+                <div class="card-body">
+                    <div class="order-items mb-4">
+                        <h5>Sản phẩm</h5>
+                        {% for item in cart_items %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <span>{{ item.product_variant_id.product.name }}</span>
+                                
+                                <small class="d-block text-muted">
+                                    {{ item.product_variant_id.color }} - {{ item.product_variant_id.size }} x {{ item.quantity }}
+                                </small>
+                            </div>
+                            <img src="{{ item.product_variant_id.image.url }}" alt="{{ item.product_variant_id.product.name }}">
+                            <span>{{ item.discounted_price|vn_currency }} ₫</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <style>
+                        img{
+                            width: 100px;
+                            height: 100px;
+                            object-fit: cover;
+                            border-radius: 5px;
+                        }
+                    </style>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span>{{ total_amount|vn_currency }} ₫</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Miễn phí vận chuyển</span>
+                        
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2 fw-bold">
+                        <span>Tổng cộng:</span>
+                        <span>{{ total_amount|vn_currency }} ₫</span>
+                    </div>
+                    <div class="voucher-section mt-4 mb-4 p-3 border rounded">
+                        <h5>Mã giảm giá</h5>
+                        
+                        {% if applied_voucher %}
+                        <!-- Hiển thị thông tin voucher đã áp dụng -->
+                        <div class="alert alert-success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ applied_voucher.code }}</strong> - Giảm {{ applied_voucher.discount_amount }}%
+                                </div>
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <button type="submit" name="remove_voucher" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times"></i> Gỡ bỏ
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Hiển thị chi tiết giảm giá -->
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between">
+                                <span>Tạm tính:</span>
+                                <span>{{ original_total|vn_currency }} ₫</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-danger">
+                                <span>Giảm giá ({{ applied_voucher.discount_amount }}%):</span>
+                                <span>-{{ discount_value|vn_currency }} ₫</span>
+                            </div>
+                            <div class="d-flex justify-content-between font-weight-bold mt-2">
+                                <span>Thành tiền:</span>
+                                <span>{{ total_amount|vn_currency }} ₫</span>
+                            </div>
+                        </div>
+                        
+                        {% else %}
+                        <!-- Form nhập mã giảm giá -->
+                        <form method="post" action="" class="d-flex">
+                            {% csrf_token %}
+                            <input type="text" name="voucher_code" class="form-control" placeholder="Nhập mã giảm giá">
+                            <button type="submit" name="apply_voucher" class="btn btn-primary ml-2">Áp dụng</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <div class="total-section mt-3">
+                        <h4 class="d-flex justify-content-between">
+                            <span>Tổng thanh toán:</span>
+                            <span class="text-primary">{{ total_amount|vn_currency }} ₫</span>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header">
@@ -85,21 +184,37 @@
                                 {% if user_addresses %}
                                     <div class="list-group mb-3">
                                         {% for address in user_addresses %}
-                                            <div class="list-group-item">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="selected_address" 
-                                                           id="address-{{ address.id }}" value="{{ address.id }}"
-                                                           {% if address.is_default %}checked{% endif %}>
-                                                    <label class="form-check-label" for="address-{{ address.id }}">
-                                                        <strong>{{ address.street }}, {{ address.ward }}, {{ address.district }}, {{ address.city }}</strong>
-                                                        {% if address.is_default %}
-                                                            <span class="badge bg-primary ms-2">Mặc định</span>
-                                                        {% endif %}
-                                                    </label>
+                                        {% if address.status == 'visible' %}
+                                        <div class="list-group-item">
+                                            <div class="form-check position-relative">
+                                                <input class="form-check-input" type="radio" name="selected_address" 
+                                                    id="address-{{ address.id }}" value="{{ address.id }}"
+                                                    {% if address.is_default %}checked{% endif %}>
+                                                <label class="form-check-label" for="address-{{ address.id }}">
+                                                    <strong>{{ address.street }}, {{ address.ward }}, {{ address.district }}, {{ address.city }}</strong>
+                                                    {% if address.is_default %}
+                                                        <span class="badge bg-primary ms-2">Mặc định</span>
+                                                    {% endif %}
+                                                </label>
+                                                {% if not address.is_default %}
+                                                <div class="position-absolute top-0 end-0 m-0">
+                                                    <!-- Thêm data attribute để xác định địa chỉ -->
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-danger delete-address" 
+                                                            data-address-id="{{ address.id }}"
+                                                            data-delete-url="{% url 'delete_address' address.id %}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </div>
+                                                {% endif %}
                                             </div>
+                                        </div>
+                                        {% endif %}
                                         {% endfor %}
                                     </div>
+                                    <style>
+                                        
+                                    </style>
                                     <div class="mb-3 form-check">
                                         <input type="checkbox" class="form-check-input" id="make_default" name="make_default">
                                         <label class="form-check-label" for="make_default">Đặt làm địa chỉ mặc định</label>
@@ -169,96 +284,66 @@
                         <button type="submit" class="btn btn-primary mt-4">Đặt hàng</button>
                         
                     </form>
+                    <form id="delete-address-form" method="POST" style="display:none;">
+                        {% csrf_token %}
+                        <input type="hidden" name="address_id" id="delete-address-id">
+                    </form>
                     
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Đơn hàng của bạn</h4>
-                </div>
-                <div class="card-body">
-                    <div class="order-items mb-4">
-                        <h5>Sản phẩm</h5>
-                        {% for item in cart_items %}
-                        <div class="d-flex justify-content-between mb-2">
-                            <div>
-                                <span>{{ item.product_variant_id.product.name }}</span>
-                                <small class="d-block text-muted">
-                                    {{ item.product_variant_id.color }} - {{ item.product_variant_id.size }} x {{ item.quantity }}
-                                </small>
-                            </div>
-                            <span>{{ item.discounted_price|vn_currency }} ₫</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <hr>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Tạm tính:</span>
-                        <span>{{ total_amount|vn_currency }} ₫</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Miễn phí vận chuyển</span>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const deleteButtons = document.querySelectorAll('.delete-address');
+                            
+                            deleteButtons.forEach(button => {
+                                button.addEventListener('click', function(event) {
+                                    // Ngăn chặn hành vi mặc định
+                                    event.preventDefault();
+                                    
+                                    if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này không?')) {
+                                        const addressId = this.getAttribute('data-address-id');
+                                        const deleteUrl = this.getAttribute('data-delete-url');
+                                        
+                                        // Sử dụng fetch để gửi request
+                                        fetch(deleteUrl, {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRFToken': getCookie('csrftoken'),
+                                                'Content-Type': 'application/x-www-form-urlencoded'
+                                            },
+                                            body: `address_id=${addressId}`
+                                        })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                // Reload hoặc update trang
+                                                window.location.reload();
+                                            } else {
+                                                alert('Có lỗi xảy ra khi xóa địa chỉ');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            alert('Có lỗi xảy ra');
+                                        });
+                                    }
+                                });
+                            });
+                        });
                         
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-between mb-2 fw-bold">
-                        <span>Tổng cộng:</span>
-                        <span>{{ total_amount|vn_currency }} ₫</span>
-                    </div>
-                    <div class="voucher-section mt-4 mb-4 p-3 border rounded">
-                        <h5>Mã giảm giá</h5>
-                        
-                        {% if applied_voucher %}
-                        <!-- Hiển thị thông tin voucher đã áp dụng -->
-                        <div class="alert alert-success">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ applied_voucher.code }}</strong> - Giảm {{ applied_voucher.discount_amount }}%
-                                </div>
-                                <form method="post" action="">
-                                    {% csrf_token %}
-                                    <button type="submit" name="remove_voucher" class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-times"></i> Gỡ bỏ
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                        <!-- Hiển thị chi tiết giảm giá -->
-                        <div class="mt-2">
-                            <div class="d-flex justify-content-between">
-                                <span>Tạm tính:</span>
-                                <span>{{ original_total|floatformat:0 }} ₫</span>
-                            </div>
-                            <div class="d-flex justify-content-between text-danger">
-                                <span>Giảm giá ({{ applied_voucher.discount_amount }}%):</span>
-                                <span>-{{ discount_value|floatformat:0 }} ₫</span>
-                            </div>
-                            <div class="d-flex justify-content-between font-weight-bold mt-2">
-                                <span>Thành tiền:</span>
-                                <span>{{ total_amount|floatformat:0 }} ₫</span>
-                            </div>
-                        </div>
-                        
-                        {% else %}
-                        <!-- Form nhập mã giảm giá -->
-                        <form method="post" action="" class="d-flex">
-                            {% csrf_token %}
-                            <input type="text" name="voucher_code" class="form-control" placeholder="Nhập mã giảm giá">
-                            <button type="submit" name="apply_voucher" class="btn btn-primary ml-2">Áp dụng</button>
-                        </form>
-                        {% endif %}
-                    </div>
-                    <div class="total-section mt-3">
-                        <h4 class="d-flex justify-content-between">
-                            <span>Tổng thanh toán:</span>
-                            <span class="text-primary">{{ total_amount|floatformat:0 }} ₫</span>
-                        </h4>
-                    </div>
+                        // Hàm lấy cookie CSRF
+                        function getCookie(name) {
+                            let cookieValue = null;
+                            if (document.cookie && document.cookie !== '') {
+                                const cookies = document.cookie.split(';');
+                                for (let i = 0; i < cookies.length; i++) {
+                                    const cookie = cookies[i].trim();
+                                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                        break;
+                                    }
+                                }
+                            }
+                            return cookieValue;
+                        }
+                    </script>
                 </div>
             </div>
         </div>
@@ -665,33 +750,103 @@ hr {
 }
 </style>
 <script>
-    // Lắng nghe sự kiện khi trang tải xong
     document.addEventListener('DOMContentLoaded', function() {
-        // Lấy các phần tử tab
+        console.log('Script đã được load');
         const savedTab = document.getElementById('saved-tab');
         const newTab = document.getElementById('new-tab');
         const usingTabInputs = document.querySelectorAll('input[name="using_tab"]');
-
-        // Đặt giá trị mặc định khi trang load là "saved_addresses"
+        const orderForm = document.querySelector('form');
+    
+        {% if user_addresses %}
         usingTabInputs.forEach(input => {
             input.value = 'saved_addresses';
         });
-        console.log('Trang vừa load, mặc định chọn: Địa chỉ đã lưu');
-
-        // Thêm event listener cho nút tab "Địa chỉ đã lưu"
+        {% else %}
+        usingTabInputs.forEach(input => {
+            input.value = 'new_address';
+        });
+        {% endif %}
+    
         savedTab.addEventListener('click', function() {
             usingTabInputs.forEach(input => {
                 input.value = 'saved_addresses';
             });
-            console.log('Bạn đang chọn tab: Địa chỉ đã lưu');
         }); 
         
-        // Thêm event listener cho nút tab "Thêm địa chỉ mới"
         newTab.addEventListener('click', function() {
             usingTabInputs.forEach(input => {
                 input.value = 'new_address';
             });
-            console.log('Bạn đang chọn tab: Thêm địa chỉ mới');
+        });
+    
+        // Thêm validation cho form
+        orderForm.addEventListener('submit', function(event) {
+            // Lấy tab đang active
+            const activeTab = document.querySelector('.tab-pane.active');
+            
+            // Validation cho tab địa chỉ đã lưu
+            if (activeTab.id === 'saved-addresses') {
+                const selectedAddress = document.querySelector('input[name="selected_address"]:checked');
+                if (!selectedAddress) {
+                    alert('Vui lòng chọn địa chỉ');
+                    event.preventDefault();
+                    return;
+                }
+            }
+            
+            // Validation cho tab địa chỉ mới
+            if (activeTab.id === 'new-address') {
+                const street = document.getElementById('street');
+                const ward = document.getElementById('ward');
+                const district = document.getElementById('district');
+                const city = document.getElementById('city');
+                
+                if (!street.value.trim()) {
+                    alert('Vui lòng nhập địa chỉ');
+                    street.focus();
+                    event.preventDefault();
+                    return;
+                }
+                
+                if (!ward.value.trim()) {
+                    alert('Vui lòng nhập phường/xã');
+                    ward.focus();
+                    event.preventDefault();
+                    return;
+                }
+                
+                if (!district.value.trim()) {
+                    alert('Vui lòng nhập quận/huyện');
+                    district.focus();
+                    event.preventDefault();
+                    return;
+                }
+                
+                if (!city.value.trim()) {
+                    alert('Vui lòng nhập thành phố');
+                    city.focus();
+                    event.preventDefault();
+                    return;
+                }
+            }
+    
+            // Validation số điện thoại
+            const phoneInput = document.querySelector('input[name="sdt"]');
+            if (!phoneInput.value.trim()) {
+                alert('Vui lòng nhập số điện thoại');
+                phoneInput.focus();
+                event.preventDefault();
+                return;
+            }
+    
+            // Kiểm tra số điện thoại (ví dụ: 10 hoặc 11 số)
+            const phoneRegex = /^0\d{9,10}$/;
+            if (!phoneRegex.test(phoneInput.value.trim())) {
+                alert('Số điện thoại không hợp lệ');
+                phoneInput.focus();
+                event.preventDefault();
+                return;
+            }
         });
     });
 </script>

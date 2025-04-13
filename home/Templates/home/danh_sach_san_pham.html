@@ -134,7 +134,7 @@
                 
                 <div class="row chuaspl">
                     {% for item in product_list %}
-                    <div class="col-md-3 mb-4">
+                    <div class="sphihi">
                         <div class="sp">
                             <a href="{% url 'product_detail' product_id=item.product.id %}"
                                 style="text-decoration: none; color: inherit;">
@@ -145,8 +145,8 @@
                                     <div class="chuadl">
                                         <p class="tensp">{{ item.product.name }}</p>
                                         <div class="chuagia">
-                                            <div class="giagiam">{{ item.giagiam }}</div>
-                                            <div class="giagoc">{{ item.giagoc }}</div>
+                                            <div class="giagiam">{{ item.giagiam }} đ</div>
+                                            <div class="giagoc">{{ item.giagoc }} đ</div>
                                             <div class="ptg">
                                                 <p>-{{ item.discount_percent|floatformat:0 }}%</p>
                                             </div>
@@ -170,7 +170,11 @@
         flex-wrap: wrap;
         gap: 10px;
     }
-    
+    .chuaspl{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 10px;
+    }
     .color-filter-item {
         position: relative;
     }
@@ -192,6 +196,7 @@
         border-color: black;
         box-shadow: 0 0 0 2px white, 0 0 0 4px black;
     }
+    
 </style>
 
 <script>

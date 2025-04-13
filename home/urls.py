@@ -42,6 +42,7 @@ urlpatterns = [
     path('tintuc/', home.get_tintuc, name='tintuc'),
     path('doitra/', home.get_doitra, name='doitra'),
     path('vanchuyen/', home.get_vanchuyen, name='vanchuyen'),
-    path('baomat', home.get_baomat, name='baomat'),
+    path('baomat/', home.get_baomat, name='baomat'),
     path('product-suggestions/', home.product_suggestions, name='product_suggestions'),
+    path('address/delete/<int:address_id>/', home.delete_address, name='delete_address'),
 ]
