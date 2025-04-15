@@ -30,7 +30,6 @@ from django.conf import settings
 import string
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.conf import settings
 from .models import UserClient
 from .utils import verify_google_token
 import requests
@@ -1239,40 +1238,29 @@ def checkout_view(request):
     # Xử lý khi người dùng nhập voucher
     # nếu yêu cầu là phương thức POST và có apply_voucher trong request.POST
     if request.method == 'POST' and 'apply_voucher' in request.POST:
-        # tạo biến voucher_code sẽ lấy dữ liệu từ request.POST.get('voucher_code', '').strip()
-        #. strip() là một phương thức để loại bỏ khoảng trắng ở đầu và cuối chuỗi
         voucher_code = request.POST.get('voucher_code', '').strip()
-        # nếu không có voucher_code thì sẽ thông báo lỗi
         if voucher_code:
-            # thử 
             try:
-                # Kiểm tra voucher hợp lệ (có tồn tại, còn hạn sử dụng)
-                # tạo biến voucher sẽ lấy dữ liệu từ bảng Voucher với điều kiện là code bằng với voucher_code
                 voucher = Voucher.objects.get(
                     code=voucher_code,
                 )
-                user = request.user  # Giả sử bạn đang sử dụng authentication
-                # Kiểm tra xem voucher đã được sử dụng chưa
+                user = request.user
                 existing_used_voucher = UsedVoucher.objects.filter(
-                # nếu user = user và voucher = voucher thì sẽ trả về True
-                user=user, 
-                voucher=voucher
+                    user=user, 
+                    voucher=voucher
                 ).exists()
-                # nếu existing_used_voucher = True thì sẽ thông báo lỗi
                 if existing_used_voucher:
                     messages.error(request, 'Mã giảm giá này đã được bạn sử dụng trước đó!')
                     return redirect('checkout')
+                
                 # Lưu thông tin voucher vào session
                 request.session['voucher_id'] = voucher.id
                 request.session['voucher_code'] = voucher.code
                 request.session['voucher_discount'] = float(voucher.discount_amount)
-                UsedVoucher.objects.create(
-                user=user,
-                voucher=voucher
-            )
+                
+                # XÓA DÒNG UsedVoucher.objects.create() TẠI ĐÂY
+                
                 messages.success(request, f'Áp dụng mã giảm giá "{voucher_code}" thành công!')
-                 
-                # Chuyển hướng để tránh gửi lại form khi refresh
                 return redirect('checkout')
                 
             except Voucher.DoesNotExist:
@@ -1328,28 +1316,13 @@ def checkout_view(request):
         if 'voucher_id' in request.session:
             del request.session['voucher_id']
         if 'voucher_code' in request.session:
-            del request.session['voucher_code'] 
+            del request.session['voucher_code']
         if 'voucher_discount' in request.session:
             del request.session['voucher_discount']
         
-        # Xóa bản ghi UsedVoucher
-        # nếu voucher_id có thì sẽ xóa bản ghi UsedVoucher
-        if voucher_id:
-            # thử
-            try:
-                # biến used_voucher sẽ lấy dữ liệu từ bảng UsedVoucher với điều kiện là user_id bằng với user_id trong session và voucher_id bằng với voucher_id
-                used_voucher = UsedVoucher.objects.filter(
-                    user=request.user,
-                    voucher_id=voucher_id
-                ).first()
-                # nếu tồn tại thì sẽ xóa bản ghi UsedVoucher
-                if used_voucher:
-                    used_voucher.delete()
-                    messages.success(request, 'Đã gỡ bỏ mã giảm giá!')
-                else:
-                    messages.info(request, 'Không tìm thấy voucher đã sử dụng!')
-            except Exception as e:
-                messages.error(request, f'Lỗi khi gỡ bỏ voucher: {str(e)}')
+        # Thông báo thành công
+        messages.success(request, 'Đã gỡ bỏ voucher thành công!')
+        
         # Chuyển hướng để tránh gửi lại form khi refresh
         return redirect('checkout')
     
@@ -1498,53 +1471,64 @@ def checkout_view(request):
         # phuong thức thanh toán
         payment_method = request.POST.get('payment_method')
         # Nếu đã có địa chỉ hợp lệ, tiến hành tạo đơn hàng
-        if selected_address:
-            # Tạo order với thông tin voucher và số điện thoại
-            order = Order.objects.create(
-                user=request.user,  
-                address=selected_address,
-                total_amount=total_amount,
-                discount_amount=discount_value,
-                payment_method=payment_method,
-                status='pending',
-                customer_phone=customer_phone
-            )
-            # Chuyển sản phẩm từ giỏ hàng sang order - giữ nguyên code
-            # nếu có sản phẩm trong giỏ hàng thì sẽ chuyển sang đơn hàng
-            if cart_items:
-                # lấy từng sản phẩm trong giỏ hàng
-                for cart_item in cart_items:
-                    # tạo một bản ghi OrderItem với thông tin sản phẩm, số lượng và giá
-                    # OrderItem là một bảng để lưu trữ thông tin sản phẩm trong đơn hàng
-                    OrderItem.objects.create(
-                        order=order,
-                        product_variant=cart_item.product_variant_id,
-                        quantity=cart_item.quantity,
-                        unit_price=cart_item.product_variant_id.price - (
-                            cart_item.product_variant_id.price * 
-                            cart_item.product_variant_id.product.id_discount_percentage.percent / 100
-                        ) 
+        # Trong phần tạo đơn hàng thành công, thêm xử lý voucher đã sử dụng
+    if selected_address:
+        # Tạo order với thông tin voucher và số điện thoại
+        order = Order.objects.create(
+            user=request.user,  
+            address=selected_address,
+            total_amount=total_amount,
+            discount_amount=discount_value,
+            payment_method=payment_method,
+            status='pending',
+            customer_phone=customer_phone
+        )
+        
+        # Chuyển sản phẩm từ giỏ hàng sang order
+        if cart_items:
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product_variant=cart_item.product_variant_id,
+                    quantity=cart_item.quantity,
+                    unit_price=cart_item.product_variant_id.price - (
+                        cart_item.product_variant_id.price * 
+                        cart_item.product_variant_id.product.id_discount_percentage.percent / 100
+                    ) 
+                )
+            
+            # Đánh dấu voucher đã sử dụng nếu có voucher trong session
+            voucher_id = request.session.get('voucher_id')
+            if voucher_id:
+                try:
+                    voucher = Voucher.objects.get(id=voucher_id)
+                    used_voucher = UsedVoucher.objects.create(
+                        user=request.user,
+                        voucher=voucher,
+                        order=order  # Lưu thông tin order
                     )
-                    
-                # Xóa các sản phẩm đã đặt hàng khỏi giỏ hàng
-                cart_items.delete()
+                except Voucher.DoesNotExist:
+                    pass
+            
+            # Xóa các sản phẩm đã đặt hàng khỏi giỏ hàng
+            cart_items.delete()
+            
+            # Xóa session data
+            for key in ['selected_items', 'voucher_id', 'voucher_code', 'voucher_discount']:
+                if key in request.session:
+                    del request.session[key]
+            
+            # Nếu thanh toán là PayPal, chuyển hướng đến trang thanh toán PayPal
+            if payment_method == 'paypal':
+                # Lưu order_id vào session để xử lý sau khi thanh toán
+                request.session['order_id'] = order.id
                 
-                # Xóa session data
-                for key in ['selected_items', 'voucher_id', 'voucher_code', 'voucher_discount']:
-                    if key in request.session:
-                        del request.session[key]
-                
-                # Nếu thanh toán là PayPal, chuyển hướng đến trang thanh toán PayPal
-                if payment_method == 'paypal':
-                    # Lưu order_id vào session để xử lý sau khi thanh toán
-                    request.session['order_id'] = order.id
-                    
-                    # Chuyển hướng đến view process_paypal để xử lý thanh toán
-                    return redirect('process_paypal')
-                else:
-                    # Phương thức thanh toán khác (như COD), tiếp tục xử lý như hiện tại
-                    messages.success(request, 'Đặt hàng thành công!')
-                    return redirect('order_confirmation')
+                # Chuyển hướng đến view process_paypal để xử lý thanh toán
+                return redirect('process_paypal')
+            else:
+                # Phương thức thanh toán khác (như COD)
+                messages.success(request, 'Đặt hàng thành công!')
+                return redirect('order_confirmation')
     
     # Chuẩn bị context cho template - giữ nguyên
     context = {
@@ -1610,31 +1594,39 @@ def cancel_order(request, order_id):
     try:
         order = Order.objects.get(id=order_id, user=request.user)
         
-        # Chỉ cho phép hủy đơn hàng ở trạng thái pending
         if order.status == 'pending':
-            # Trước khi thay đổi trạng thái, cập nhật lại số lượng tồn kho
-            order_items = order.orderitem_set.all()  # Lấy tất cả các item trong đơn hàng orderitem_set là một thuộc tính của order để lấy tất cả các item trong đơn hàng
-            # duyệt từng item trong order_items
+            # Xử lý items và kho hàng
+            order_items = OrderItem.objects.filter(order=order)
             for item in order_items:
-                # biến product_variant sẽ lấy dữ liệu từ bảng ProductVariant với điều kiện là id bằng với item.product_variant_id
                 product_variant = item.product_variant
-                # Cộng lại số lượng vào kho
                 product_variant.stock += item.quantity
-                # sau đó save
                 product_variant.save()
             
-            # Sau khi cập nhật số lượng, thay đổi trạng thái đơn hàng
+            # Tìm và xóa voucher đã sử dụng cho đơn hàng này
+            try:
+                used_voucher = UsedVoucher.objects.filter(order=order).first()
+                if used_voucher:
+                    voucher_code = used_voucher.voucher.code
+                    used_voucher.delete()
+                    messages.success(request, f'Voucher {voucher_code} đã được hoàn lại và có thể sử dụng lại.')
+            except Exception as e:
+                messages.warning(request, f'Không thể hoàn lại voucher: {str(e)}')
+            
+            # Cập nhật trạng thái
             order.status = 'cancelled'
             order.save()
             
             messages.success(request, 'Đơn hàng #' + str(order_id) + ' đã được hủy thành công.')
         else:
             messages.error(request, 'Không thể hủy đơn hàng này vì đã được xử lý.')
-        # trả về trang order_detail với order_id đã hủy
+            
         return redirect('order_detail', order_id=order_id)
     except Order.DoesNotExist:
         messages.error(request, 'Đơn hàng không tồn tại.')
         return redirect('order_list')
+    except Exception as e:
+        messages.error(request, f'Đã xảy ra lỗi khi hủy đơn hàng: {str(e)}')
+        return redirect('order_detail', order_id=order_id)
 
 
 

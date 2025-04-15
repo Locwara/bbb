@@ -128,6 +128,7 @@ from django.contrib.auth.models import User
 
 # models.py
 class Order(models.Model):
+    id = models.AutoField(primary_key=True)
     STATUS_CHOICES = (
         ('pending', 'Đang xử lý'),
         ('accept', 'Đang giao hàng'),
@@ -237,8 +238,9 @@ class UsedVoucher(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('UserClient', on_delete=models.CASCADE, related_name='used_vouchers')
     voucher = models.ForeignKey('Voucher', on_delete=models.CASCADE, related_name='used_by_users')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     used_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         db_table = 'used_voucher'
         unique_together = ('user', 'voucher')  # Ensure a user can't use the same voucher multiple times
