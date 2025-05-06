@@ -74,11 +74,11 @@
                     <p><strong>Trạng thái:</strong> {% if order.payment_status %} Đã thanh toán
                     {% else %} Chưa thanh toán {% endif %}</p>
                     <hr>
-                    <p><strong>Tổng tiền sản phẩm:</strong> {{ order.total_amount|add:order.discount_amount|floatformat:0 }}₫</p>
+                    <p><strong>Tổng tiền sản phẩm:</strong> {{ order.total_amount|add:order.discount_amount|vn_currency }}₫</p>
                     {% if order.discount_amount > 0 %}
-                    <p><strong>Giảm giá:</strong> -{{ order.discount_amount|floatformat:0 }}₫</p>
+                    <p><strong>Giảm giá:</strong> -{{ order.discount_amount|vn_currency }}₫</p>
                     {% endif %}
-                    <p class="fw-bold" style="color: #2e7d32;"><strong>Tổng thanh toán:</strong> {{ order.total_amount|floatformat:0 }}₫</p>
+                    <p class="fw-bold" style="color: #2e7d32;"><strong>Tổng thanh toán:</strong> {{ order.total_amount|vn_currency }}₫</p>
                 </div>
             </div>
         </div>
@@ -103,6 +103,9 @@
                             {% elif order.status == 'cancelled' %}Đã hủy
                             {% else %}{{ order.status }}{% endif %}
                         </span>
+                        {% if order.status == 'cancelled' and order.payment_method == 'paypal' %}
+                        <p><strong class="text-warning">Trạng thái hoàn tiền:</strong> {{ order.re_pay }}</p>
+                        {% endif %}
                     </p>
                 
                     {% if order.address %}
@@ -165,7 +168,7 @@
                             </div>
                             <div>
                                 <h6 class="mb-0">Đã xác nhận đơn hàng</h6>
-                                <small class="text-muted">{% if order.status == 'pending' %}Đang chờ xác nhận{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}</small>
+                                <small class="text-muted">{% if order.status == 'pending' %}Đang chờ xác nhận{% elif order.status == 'cancelled'%}Đơn hàng này đã bị hủy{% else %}{{ order.updated_at|date:"d/m/Y H:i" }}{% endif %}</small>
                             </div>
                         </div>
                         
@@ -253,9 +256,9 @@
                                         {% endwith %}
                                     {% endif %}
                             </td>
-                            <td>{{ item.unit_price|floatformat:0 }}₫</td>
+                            <td>{{ item.unit_price|vn_currency }}₫</td>
                             <td>{{ item.quantity }}</td>
-                            <td class="text-end">{{ item.total_price|floatformat:0 }}₫</td>
+                            <td class="text-end">{{ item.total_price|vn_currency }}₫</td>
                             
                         </tr>
                         {% endfor %}
@@ -265,17 +268,17 @@
                         
                         <tr>
                             <td colspan="3" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
-                            <td class="text-end">{{ order.total_amount|add:order.discount_amount|floatformat:0 }}₫</td>
+                            <td class="text-end">{{ order.total_amount|add:order.discount_amount|vn_currency }}₫</td>
                         </tr>
                         {% if order.discount_amount > 0 %}
                         <tr>
                             <td colspan="3" class="text-end"><strong>Giảm giá:</strong></td>
-                            <td class="text-end">-{{ order.discount_amount|floatformat:0 }}₫</td>
+                            <td class="text-end">-{{ order.discount_amount|vn_currency }}₫</td>
                         </tr>
                         {% endif %}
                         <tr>
                             <td colspan="3" class="text-end"><strong>Tổng thanh toán:</strong></td>
-                            <td class="text-end" style="color: #2e7d32; font-weight: bold;">{{ order.total_amount|floatformat:0 }}₫</td>
+                            <td class="text-end" style="color: #2e7d32; font-weight: bold;">{{ order.total_amount|vn_currency }}₫</td>
                         </tr>
                     </tfoot>
                 </table>

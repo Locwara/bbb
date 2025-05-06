@@ -119,7 +119,7 @@
                 if (currentVariant) {
                     // dòng này sẽ hiển thị giá và phần trăm giảm giá
                     priceElement.textContent = `Giá: ` + formatPrice(currentVariant.price) + ` - ${currentVariant.discount_percent}%`;
-                    giamgiaElement.textContent = 'Giảm giá: ' +  formatPrice(currentVariant.discount_price);
+                    giamgiaElement.textContent = 'Giảm giá: ' +  formatPrice(currentVariant.price - (currentVariant.price * currentVariant.discount_percent/100));
                     stockElement.textContent = `Còn lại: ${currentVariant.stock} sản phẩm`;
                     addToCartButton.disabled = currentVariant.stock === 0;
                     
@@ -251,9 +251,9 @@
         setTimeout(() => {
             if (currentVariant) {
                 const unitPrice = parseFloat(currentVariant.discount_price);
-                const totalPrice = unitPrice * quantity;
+                const totalPrice = (currentVariant.price - (currentVariant.price * currentVariant.discount_percent/100)) * quantity;
             
-                unitPriceElement.textContent = formatPrice(unitPrice);
+                unitPriceElement.textContent = formatPrice(currentVariant.price - (currentVariant.price * currentVariant.discount_percent/100))
                 quantityDisplayElement.textContent = quantity;
                 totalPriceElement.textContent = formatPrice(totalPrice);
             } else {

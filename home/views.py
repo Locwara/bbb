@@ -1594,8 +1594,18 @@ def cancel_order(request, order_id):
     try:
         order = Order.objects.get(id=order_id, user=request.user)
         
+        
         if order.status == 'pending':
             # Xử lý items và kho hàng
+            if order.payment_method == 'paypal':
+                # Kiểm tra trạng thái thanh toán (giả sử có field payment_status)
+                if hasattr(order, 'payment_status') and order.payment_status == True:
+                    order.re_pay = "đang chờ hoàn tiền"
+                    messages.info(request, 'Đơn hàng đã thanh toán qua PayPal và đang chờ hoàn tiền.')
+                else:
+                    # Nếu đơn hàng chưa thanh toán, không cần hoàn tiền
+                    order.re_pay = "không cần hoàn tiền"
+                order.save()
             order_items = OrderItem.objects.filter(order=order)
             for item in order_items:
                 product_variant = item.product_variant
@@ -1611,6 +1621,7 @@ def cancel_order(request, order_id):
                     messages.success(request, f'Voucher {voucher_code} đã được hoàn lại và có thể sử dụng lại.')
             except Exception as e:
                 messages.warning(request, f'Không thể hoàn lại voucher: {str(e)}')
+            
             
             # Cập nhật trạng thái
             order.status = 'cancelled'
@@ -1650,15 +1661,12 @@ def process_paypal(request):
     """
     Xử lý thanh toán PayPal
     """
-    # thử
     try:
         # Log bắt đầu xử lý
         print("Bắt đầu xử lý PayPal")
         
         # Lấy order_id từ session
-        # biến order_id sẽ lấy dữ liệu từ request.session.get('order_id')
         order_id = request.session.get('order_id')
-        # nếu không có order_id thì sẽ thông báo lỗi
         if not order_id:
             messages.error(request, 'Không tìm thấy đơn hàng')
             return redirect('home')
@@ -1666,9 +1674,7 @@ def process_paypal(request):
         print(f"Order ID: {order_id}")
         
         # Lấy thông tin đơn hàng
-        # thử
         try:
-            # order sẽ lấy dữ liệu từ bảng Order với điều kiện là id bằng với order_id và user bằng với user_id trong session
             order = Order.objects.get(id=order_id, user=request.user)
         except Order.DoesNotExist:
             messages.error(request, 'Đơn hàng không tồn tại')
@@ -1682,13 +1688,9 @@ def process_paypal(request):
         print(f"Tỷ giá: {exchange_rate}")
         
         # Chuyển đổi VND sang USD
-        # thử
         try:
-            # biến usd_amount sẽ lấy dữ liệu từ bảng Order với điều kiện là id bằng với order_id và user bằng với user_id trong session
             usd_amount = float(round(order.total_amount * exchange_rate, 2))
-            # nếu usd_amount < 0.01 thì sẽ gán giá trị là 0.01
             usd_amount = max(usd_amount, 0.01)
-        # nếu không chuyển đổi được thì sẽ thông báo lỗi
         except Exception as convert_error:
             print(f"Lỗi chuyển đổi tiền: {convert_error}")
             messages.error(request, 'Lỗi chuyển đổi tiền tệ')
@@ -1698,25 +1700,19 @@ def process_paypal(request):
         
         # Địa chỉ host
         host = request.get_host()
+        protocol = 'https' if request.is_secure() else 'http'
         
         # Chuẩn bị thông tin thanh toán PayPal
         paypal_dict = {
-            #business là địa chỉ email của người nhận tiền
             'business': settings.PAYPAL_RECEIVER_EMAIL,
-            #amount là số tiền thanh toán
-            'amount': str(usd_amount),  # Số tiền là USD
-            # 'item_name' là tên sản phẩm
+            'amount': str(usd_amount),
             'item_name': f'Đơn hàng #{order.id}',
-            #invoice là mã đơn hàng
             'invoice': str(order.id),
-            #currency_code là mã tiền tệ
             'currency_code': 'USD',
-            #notify_url là địa chỉ để PayPal gửi thông báo về trạng thái thanh toán
-            'notify_url': f'http://{host}{reverse("paypal-ipn")}',
-            #return_url là địa chỉ để PayPal chuyển hướng về sau khi thanh toán thành công
-            'return_url': f'http://{host}{reverse("payment_done")}',
-            #cancel_return là địa chỉ để PayPal chuyển hướng về sau khi thanh toán bị hủy
-            'cancel_return': f'http://{host}{reverse("payment_canceled")}',
+            'notify_url': f'{protocol}://{host}{reverse("paypal-ipn")}',
+            'return_url': f'{protocol}://{host}{reverse("payment_done")}',
+            'cancel_return': f'{protocol}://{host}{reverse("payment_canceled")}',
+            'custom': str(order.id),  # Thêm trường custom để truyền order_id
         }
         
         # In thông tin PayPal để debug
@@ -1731,41 +1727,93 @@ def process_paypal(request):
             'form': form,
             'usd_amount': usd_amount,
         })
-    # nếu có lỗi trong quá trình xử lý thanh toán
     except Exception as e:
         # Ghi log toàn bộ lỗi
         print(f"Lỗi không xác định: {e}")
         messages.error(request, 'Có lỗi xảy ra khi xử lý thanh toán')
         return redirect('home')
     
-# tạo một hàm payment_done với biến request dùng để xử lý thanh toán thành công
 def payment_done(request):
-    # Lấy order_id từ session
-    order_id = request.session.get('order_id')
-    # nếu order_id có thì sẽ xử lý thanh toán thành công
-    if order_id:
-        try:
-            # Cập nhật trạng thái thanh toán của đơn hàng
-            order = Order.objects.get(id=order_id)
-            order.payment_status = True
-            order.save()
+    """
+    Xử lý khi thanh toán thành công
+    """
+    try:
+        # Lấy order_id từ session hoặc từ PayPal response
+        order_id = request.session.get('order_id')
+        
+        # Nếu không có trong session, thử lấy từ PayPal response
+        if not order_id and 'custom' in request.GET:
+            order_id = request.GET.get('custom')
+        elif not order_id and 'invoice' in request.GET:
+            order_id = request.GET.get('invoice')
+        
+        if order_id:
+            try:
+                order = Order.objects.get(id=order_id)
+                order.payment_status = True
+                
+                # Lưu thông tin PayPal vào trường stk
+                # Ưu tiên theo thứ tự: txn_id > receipt_number > payment_id > payer_id
+                if 'txn_id' in request.GET:
+                    order.stk = request.GET.get('txn_id')
+                elif 'receipt_number' in request.GET:
+                    order.stk = request.GET.get('receipt_number')
+                elif 'paymentId' in request.GET:
+                    order.stk = request.GET.get('paymentId')
+                elif 'PayerID' in request.GET:
+                    order.stk = request.GET.get('PayerID')
+                
+                # Log tất cả GET parameters để debug
+                print("PayPal Response Parameters:", request.GET)
+                
+                order.save()
+                
+                # Xóa order_id khỏi session nếu có
+                if 'order_id' in request.session:
+                    del request.session['order_id']
+                
+                messages.success(request, 'Thanh toán thành công!')
+                return redirect('order_confirmation')
+                
+            except Order.DoesNotExist:
+                messages.error(request, 'Đơn hàng không tồn tại')
+        else:
+            messages.error(request, 'Không tìm thấy thông tin đơn hàng')
             
-            # Xóa order_id khỏi session
-            del request.session['order_id']
-            
-            messages.success(request, 'Thanh toán thành công!')
-            #trả về trang order_confirmation.html
-            return redirect('order_confirmation')
-            
-        except Order.DoesNotExist:
-            pass
-    #trả về trang home.html
+    except Exception as e:
+        print(f"Lỗi trong payment_done: {e}")
+        messages.error(request, f'Đã xảy ra lỗi khi xử lý thanh toán: {str(e)}')
+        
     return redirect('home')
-# tạo một hàm payment_canceled với biến request dùng để xử lý thanh toán bị hủy
+
 def payment_canceled(request):
-    # Xử lý khi người dùng hủy thanh toán
-    messages.warning(request, 'Thanh toán đã bị hủy')
-    #trả về trang checkout.html
+    """
+    Xử lý khi người dùng hủy thanh toán
+    """
+    try:
+        # Log thông tin hủy thanh toán
+        print("Thanh toán bị hủy:", request.GET)
+        
+        # Lấy order_id từ session hoặc từ PayPal response
+        order_id = request.session.get('order_id')
+        if not order_id and 'custom' in request.GET:
+            order_id = request.GET.get('custom')
+        
+        if order_id:
+            try:
+                # Cập nhật trạng thái đơn hàng nếu cần
+                order = Order.objects.get(id=order_id)
+                order.payment_status = False
+                order.save()
+                
+                messages.warning(request, f'Thanh toán cho đơn hàng #{order_id} đã bị hủy')
+            except Order.DoesNotExist:
+                pass
+        else:
+            messages.warning(request, 'Thanh toán đã bị hủy')
+    except Exception as e:
+        print(f"Lỗi trong payment_canceled: {e}")
+        
     return redirect('checkout')
 
 

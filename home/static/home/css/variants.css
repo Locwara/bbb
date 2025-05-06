@@ -147,12 +147,18 @@
 
 .size-selection{
     display: flex;
+    flex-direction: row !important;
 }
+.size-selection #size-options{
+    display: flex ;
+    flex-direction: row ;
 
+}
 .size-selection .size-option{
     min-width: 50px;
     border-radius: 4px;
     display: flex;
+
     justify-content: center;
     align-items: center;
 }

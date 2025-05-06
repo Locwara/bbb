@@ -145,7 +145,8 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     customer_phone = models.CharField(max_length=15)
     payment_status = models.BooleanField(default=False)
-    
+    re_pay = models.CharField(max_length=20, null=True, blank=True)  # Trường này để lưu thông tin thanh toán lại
+    stk = models.CharField(max_length = 50, null=True, blank=True)  # Trường này để lưu thông tin thanh toán lại
     class Meta:
         db_table = 'orders'
     
